@@ -11,46 +11,23 @@ import { useToast } from "@/hooks/use-toast";
 import { Download, FileText, CheckCircle, ArrowLeft, Eye, User, Briefcase, GraduationCap, Code, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { exportToFormat } from "@/utils/pdfExport";
-import { PaymentDialog } from "@/components/ResumeBuilder/PaymentDialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PageSEO from "@/components/SEO/PageSEO";
 import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/LinkedInOptimizationDialog";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
 import { useDeviceDetect } from "@/utils/responsiveUtils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { checkPreviousPayment } from "@/utils/paymentUtils";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { toast } = useToast();
   const { isMobile, isTablet } = useDeviceDetect();
   const [activeSection, setActiveSection] = useState("personal");
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [showPaymentInfo, setShowPaymentInfo] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
   const [resumeData, setResumeData] = useState({
     personal: {},
     experience: [],
     education: [],
     skills: []
   });
-
-  // Check if user has previously paid
-  useEffect(() => {
-    const hasPaid = checkPreviousPayment();
-    if (hasPaid) {
-      setIsPaid(true);
-    }
-  }, []);
 
   const sections = [
     { id: "personal", label: "Personal Info", icon: User },
@@ -70,68 +47,22 @@ const Index = () => {
     });
   };
 
-  const sendThankYouEmail = async (email: string, name: string, format: string) => {
-    try {
-      const { error } = await supabase.functions.invoke('send-thank-you', {
-        body: { email, name, format }
-      });
-      
-      if (error) {
-        console.error("Error sending thank you email:", error);
-      } else {
-        console.log("Thank you email sent successfully");
-      }
-    } catch (error) {
-      console.error("Error invoking send-thank-you function:", error);
-    }
-  };
-
-  const handlePaymentSuccess = (format: string) => {
-    setShowPaymentDialog(false);
-    setIsPaid(true);
-    
-    // Get user email and name from localStorage or form
-    const userEmail = localStorage.getItem('user_email');
-    const userName = localStorage.getItem('user_name');
-    
-    // Send thank you email if we have the user's email
-    if (userEmail) {
-      sendThankYouEmail(userEmail, userName || '', format);
-    }
-    
-    // Explicitly start the export process with the specified format
-    setTimeout(() => {
-      exportToFormat(format).then(() => {
-        console.log(`Resume download started in ${format} format`);
-      }).catch(error => {
-        console.error("Error during export:", error);
-        toast({
-          title: "Export Error",
-          description: "There was an error downloading your resume. Please try again.",
-          variant: "destructive"
-        });
-      });
-    }, 500); // Short delay to ensure UI updates first
-    
-    toast({
-      title: "Success",
-      description: "Your resume is downloading automatically!",
-      variant: "default"
-    });
-  };
-
   const handleExport = async () => {
-    // If user has already paid, skip the payment info dialog
-    if (isPaid) {
-      setShowPaymentDialog(true);
-    } else {
-      setShowPaymentInfo(true);
+    try {
+      await exportToFormat('pdf');
+      toast({
+        title: "Success",
+        description: "Your resume is downloading automatically!",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error during export:", error);
+      toast({
+        title: "Export Error",
+        description: "There was an error downloading your resume. Please try again.",
+        variant: "destructive"
+      });
     }
-  };
-
-  const handlePaymentInfoConfirm = () => {
-    setShowPaymentInfo(false);
-    setShowPaymentDialog(true);
   };
 
   const ResumePreview = () => (
@@ -147,10 +78,10 @@ const Index = () => {
           size={isMobile ? "sm" : "default"}
         >
           <Download className="w-4 h-4" />
-          {isPaid ? "Download Again" : "Download"}
+          Download PDF
         </Button>
       </div>
-      <ResumePreviewer data={resumeData} isPaid={isPaid} />
+      <ResumePreviewer data={resumeData} isPaid={true} />
     </div>
   );
 
@@ -289,42 +220,6 @@ const Index = () => {
           </div>
         </div>
       </ResponsiveContainer>
-      
-      <AlertDialog open={showPaymentInfo} onOpenChange={setShowPaymentInfo}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Payment Information</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4 text-left">
-              <p>
-                You're about to download a premium resume with professional formatting and ATS optimization.
-              </p>
-              <p>
-                The payment process is secure and your details are encrypted. After payment, your resume will download automatically.
-              </p>
-              <div className="p-3 bg-blue-50 text-blue-700 rounded-md">
-                <p className="font-medium">Payment Tips:</p>
-                <ul className="list-disc pl-5 text-sm mt-1">
-                  <li>Complete your payment promptly to avoid transaction timeouts</li>
-                  <li>Use any payment method supported by Razorpay</li>
-                  <li>Your purchase gives you unlimited access to download your resume</li>
-                </ul>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handlePaymentInfoConfirm}>
-              Continue to Payment
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <PaymentDialog
-        open={showPaymentDialog}
-        onOpenChange={setShowPaymentDialog}
-        onSuccess={handlePaymentSuccess}
-      />
     </div>
   );
 };

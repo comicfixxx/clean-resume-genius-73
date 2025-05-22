@@ -56,7 +56,7 @@ const preconnectDomains = [
   'https://fonts.googleapis.com',
   'https://fonts.gstatic.com',
   'https://api.producthunt.com',
-  'https://checkout.razorpay.com'
+  'https://cdn.jsdelivr.net' // Added for QR code library
 ];
 
 const App: React.FC = () => {
