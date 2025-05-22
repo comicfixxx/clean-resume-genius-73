@@ -136,16 +136,12 @@
         qrContainer.style.justifyContent = 'center';
         qrContainer.style.marginBottom = '20px';
         
-        const qrPlaceholder = document.createElement('div');
-        qrPlaceholder.id = 'qr-code';
-        qrPlaceholder.style.width = '200px';
-        qrPlaceholder.style.height = '200px';
-        qrPlaceholder.style.backgroundColor = '#f1f1f1';
-        qrPlaceholder.style.display = 'flex';
-        qrPlaceholder.style.alignItems = 'center';
-        qrPlaceholder.style.justifyContent = 'center';
-        qrPlaceholder.textContent = 'Loading QR Code...';
-        qrContainer.appendChild(qrPlaceholder);
+        const qrImage = document.createElement('img');
+        qrImage.src = '/lovable-uploads/c73b380c-4839-40a6-afb7-b3046b37512d.png';
+        qrImage.alt = 'Donation QR Code';
+        qrImage.style.width = '200px';
+        qrImage.style.height = '200px';
+        qrContainer.appendChild(qrImage);
         
         // Input field for amount
         const inputContainer = document.createElement('div');
@@ -167,7 +163,6 @@
         amountInput.style.border = '1px solid #ddd';
         amountInput.style.borderRadius = '4px';
         amountInput.style.textAlign = 'right';
-        amountInput.onchange = generateQR;
         
         inputContainer.appendChild(amountLabel);
         inputContainer.appendChild(amountInput);
@@ -202,49 +197,11 @@
         // Functions
         window.openDonationDialog = function() {
           modal.style.display = 'flex';
-          generateQR();
         };
         
         window.closeDonationDialog = function() {
           modal.style.display = 'none';
         };
-        
-        async function generateQR() {
-          if (!window.QRCode) {
-            // Load QRCode.js if not already loaded
-            await loadQRCodeScript();
-          }
-          
-          const amount = document.getElementById('donation-amount').value;
-          const qrContainer = document.getElementById('qr-code');
-          
-          // Clear previous QR code
-          qrContainer.innerHTML = '';
-          
-          // Create the UPI URL for donation
-          const baseUrl = 'upi://pay';
-          const params = new URLSearchParams();
-          params.append('pa', config.upiId);
-          params.append('pn', config.name);
-          params.append('am', amount);
-          params.append('tn', 'Donation');
-          const upiUrl = `${baseUrl}?${params.toString()}`;
-          
-          // Generate QR code
-          QRCode.toCanvas(qrContainer, upiUrl, { width: 200 }, function(error) {
-            if (error) console.error('Error generating QR code:', error);
-          });
-        }
-        
-        function loadQRCodeScript() {
-          return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-        }
       })();
     </script>
   </body>

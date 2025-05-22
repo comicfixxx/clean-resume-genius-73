@@ -17,18 +17,14 @@ interface DonationDialogProps {
 const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: DonationDialogProps) => {
   const [donationAmount, setDonationAmount] = useState(399);
   const [showQR, setShowQR] = useState(false);
-  const [qrLoaded, setQrLoaded] = useState(false);
   const [hasDonated, setHasDonated] = useState(checkDonationStatus());
 
   // Handle dialog opening/closing
   useEffect(() => {
     if (open) {
       setHasDonated(checkDonationStatus());
-      if (showQR) {
-        generateQRCode();
-      }
     }
-  }, [open, showQR]);
+  }, [open]);
 
   // Function to handle donation completion
   const handleComplete = () => {
@@ -41,51 +37,6 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
   // Function to show donation QR
   const handleDonate = () => {
     setShowQR(true);
-    generateQRCode();
-  };
-
-  // Generate QR code for UPI payment
-  const generateQRCode = async () => {
-    try {
-      // Load QRCode.js if not already loaded
-      if (!window.QRCode) {
-        await loadQRCodeScript();
-      }
-      
-      const qrContainer = document.getElementById('donation-qr-code');
-      if (!qrContainer) return;
-      
-      // Clear previous QR code
-      qrContainer.innerHTML = '';
-      
-      // Create the UPI URL for donation
-      const baseUrl = 'upi://pay';
-      const params = new URLSearchParams();
-      params.append('pa', 'adnanmuhammad4393@okicici');
-      params.append('pn', 'Muhammed Adnan');
-      params.append('am', donationAmount.toString());
-      params.append('tn', 'Resume Builder Donation');
-      const upiUrl = `${baseUrl}?${params.toString()}`;
-      
-      // Generate QR code
-      window.QRCode.toCanvas(qrContainer, upiUrl, { width: 200 }, function(error: any) {
-        if (error) console.error('Error generating QR code:', error);
-        setQrLoaded(true);
-      });
-    } catch (error) {
-      console.error('Error generating QR code:', error);
-    }
-  };
-
-  // Load QRCode.js library
-  const loadQRCodeScript = () => {
-    return new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
-      script.onload = () => resolve();
-      script.onerror = () => reject();
-      document.head.appendChild(script);
-    });
   };
 
   return (
@@ -128,12 +79,11 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
         {!hasDonated && showQR && (
           <div className="py-4 space-y-4">
             <div className="flex justify-center">
-              <div 
-                id="donation-qr-code" 
-                className="w-[200px] h-[200px] bg-gray-100 flex items-center justify-center text-sm"
-              >
-                {!qrLoaded && "Loading QR Code..."}
-              </div>
+              <img 
+                src="/lovable-uploads/c73b380c-4839-40a6-afb7-b3046b37512d.png" 
+                alt="Donation QR Code"
+                className="w-[200px] h-[200px] object-contain"
+              />
             </div>
             
             <div className="text-center space-y-2">
@@ -173,19 +123,5 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
     </Dialog>
   );
 };
-
-// Add type definitions for window.QRCode
-declare global {
-  interface Window {
-    QRCode: {
-      toCanvas: (
-        canvas: HTMLElement,
-        text: string,
-        options: { width: number },
-        callback: (error: any) => void
-      ) => void;
-    };
-  }
-}
 
 export default DonationDialog;
