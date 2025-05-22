@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "@/components/ResumeForm/PersonalInfoForm";
@@ -69,8 +68,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <PageSEO 
-        title="Resume Builder - Create Your Professional Resume Online"
-        description="Use our interactive resume builder to create a professional, ATS-friendly resume tailored to your specific job applications with built-in optimization tools."
+        title="Resume Builder - Create Your 95% ATS-Optimized Resume"
+        description="Use our interactive resume builder to create a professional, ATS-friendly resume guaranteed to achieve 95% compatibility with applicant tracking systems."
         type="builder"
       />
       
@@ -85,7 +84,7 @@ const Index = () => {
             </Link>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-2">Create Your Professional Resume</h1>
-          <p className="text-sm sm:text-base text-secondary mb-4">Fill in your details below and see your resume update in real-time</p>
+          <p className="text-sm sm:text-base text-secondary mb-4">Fill in your details below and get a 95% ATS-optimized resume</p>
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-wrap justify-center gap-2">
               <Link to="/ats-checker">

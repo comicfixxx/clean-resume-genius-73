@@ -72,7 +72,7 @@ export const calculateResumeScore = (resumeData: any): number => {
     if (resumeData.skills.length >= 5) score += 5;
   }
 
-  // Ensure minimum 80% ATS compatibility for completed resumes
+  // Ensure minimum 95% ATS compatibility for completed resumes (updated from 80%)
   if (score > 50) {
     const hasBasicElements = 
       resumeData.personal?.fullName && 
@@ -81,8 +81,8 @@ export const calculateResumeScore = (resumeData: any): number => {
       (resumeData.experience?.length > 0 || resumeData.education?.length > 0);
       
     if (hasBasicElements) {
-      // Boost score to at least 80 for completed resumes to reflect our guarantee
-      score = Math.max(score, 80);
+      // Boost score to at least 95 for completed resumes to reflect our guarantee
+      score = Math.max(score, 95);
     }
   }
 

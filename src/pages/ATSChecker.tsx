@@ -90,7 +90,7 @@ const ATSChecker = () => {
             "Optimal keyword placement",
             "Clean, professional formatting",
             "Clear section structure",
-            "80%+ compatibility guaranteed"
+            "95%+ compatibility guaranteed"
           ],
           suggestions: []
         });
@@ -168,10 +168,10 @@ const ATSChecker = () => {
           <CardHeader className="bg-primary/5">
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
-              80%+ ATS Compatibility Guarantee
+              95%+ ATS Compatibility Guarantee
             </CardTitle>
             <CardDescription>
-              All resumes created with SXO Resume are guaranteed to achieve at least 80% ATS compatibility
+              All resumes created with SXO Resume are guaranteed to achieve at least 95% ATS compatibility
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -298,3 +298,4 @@ const ATSChecker = () => {
 };
 
 export default ATSChecker;
+

@@ -1,4 +1,3 @@
-
 import { calculateResumeScore } from '@/utils/algorithms';
 import { useEffect, useState, memo } from 'react';
 import { AlertCircle, CheckCircle, Download } from 'lucide-react';
@@ -167,14 +166,14 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
   };
 
   const getScoreBadge = () => {
-    if (atsScore >= 90) {
+    if (atsScore >= 95) {
       return (
         <div className="flex items-center gap-1 text-green-500">
           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
           <span className="font-medium text-2xs sm:text-xs">Excellent</span>
         </div>
       );
-    } else if (atsScore >= 80) {
+    } else if (atsScore >= 85) {
       return (
         <div className="flex items-center gap-1 text-green-500">
           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -207,7 +206,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
                 <div className="max-w-[200px] sm:max-w-xs">
                   <p className="font-medium">ATS Compatibility Score</p>
                   <p className="text-2xs sm:text-xs mt-1">This measures how well your resume will perform with Applicant Tracking Systems.</p>
-                  {atsScore < 80 && (
+                  {atsScore < 95 && (
                     <div className="mt-2 text-2xs sm:text-xs">
                       <p className="font-medium text-amber-500">Tips to improve:</p>
                       <ul className="list-disc pl-4 space-y-0.5 sm:space-y-1 mt-1">
