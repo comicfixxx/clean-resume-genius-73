@@ -124,9 +124,9 @@ const PageSEO: React.FC<PageSEOProps> = ({
         </script>
       </Helmet>
       
-      {/* Include our existing SEO components */}
-      <SeoKeywords page={type} />
-      <SeoStructuredData type={type} />
+      {/* Update the type prop for SeoKeywords and SeoStructuredData components */}
+      <SeoKeywords page={type as any} />
+      <SeoStructuredData type={type as any} />
     </>
   );
 };
