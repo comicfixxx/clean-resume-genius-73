@@ -8,15 +8,15 @@ import { SkillsForm } from "@/components/ResumeForm/SkillsForm";
 import { ResumePreviewer } from "@/components/ResumePreviewer/ResumePreviewer";
 import { SocialLinks } from "@/components/SocialLinks/SocialLinks";
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileText, CheckCircle, ArrowLeft, Eye, User, Briefcase, GraduationCap, Code, Linkedin } from "lucide-react";
+import { ArrowLeft, Eye, User, Briefcase, GraduationCap, Code } from "lucide-react";
 import { Link } from "react-router-dom";
-import { exportToFormat } from "@/utils/pdfExport";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PageSEO from "@/components/SEO/PageSEO";
 import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/LinkedInOptimizationDialog";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
 import { useDeviceDetect } from "@/utils/responsiveUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { checkDonationStatus } from "@/utils/donationUtils";
 
 const Index = () => {
   const { toast } = useToast();
@@ -47,39 +47,20 @@ const Index = () => {
     });
   };
 
-  const handleExport = async () => {
-    try {
-      await exportToFormat('pdf');
-      toast({
-        title: "Success",
-        description: "Your resume is downloading automatically!",
-        variant: "default"
-      });
-    } catch (error) {
-      console.error("Error during export:", error);
-      toast({
-        title: "Export Error",
-        description: "There was an error downloading your resume. Please try again.",
-        variant: "destructive"
-      });
+  // Check donation status on load
+  useEffect(() => {
+    const donated = checkDonationStatus();
+    if (donated) {
+      console.log("User has already donated");
     }
-  };
+  }, []);
 
   const ResumePreview = () => (
     <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
       <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
         <h2 className="text-lg sm:text-xl font-semibold text-primary flex items-center gap-2">
-          <FileText className="w-4 sm:w-5 h-4 sm:h-5" />
           Live Preview
         </h2>
-        <Button 
-          onClick={handleExport} 
-          className="flex items-center gap-2"
-          size={isMobile ? "sm" : "default"}
-        >
-          <Download className="w-4 h-4" />
-          Download PDF
-        </Button>
       </div>
       <ResumePreviewer data={resumeData} isPaid={true} />
     </div>
@@ -113,7 +94,6 @@ const Index = () => {
                   size={isMobile ? "sm" : "default"}
                   className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                 >
-                  <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4" />
                   ATS Score Checker
                 </Button>
               </Link>
@@ -123,7 +103,6 @@ const Index = () => {
                   size={isMobile ? "sm" : "default"} 
                   className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                 >
-                  <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4" />
                   Interview Tips
                 </Button>
               </Link>
@@ -219,6 +198,9 @@ const Index = () => {
             </Sheet>
           </div>
         </div>
+
+        {/* Add a donation widget container for the script to use */}
+        <div id="donating-widget-container" className="hidden"></div>
       </ResponsiveContainer>
     </div>
   );
