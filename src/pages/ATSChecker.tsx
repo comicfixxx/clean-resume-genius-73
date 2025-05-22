@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, AlertCircle, CheckCircle, Info, ArrowRight } from "lucide-react";
-import { PaymentDialog } from "@/components/ResumeBuilder/PaymentDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,13 +17,7 @@ const ATSChecker = () => {
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<ATSReport | null>(null);
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
-  const handlePaymentSuccess = () => {
-    setShowPaymentDialog(false);
-    analyzeResumeContent();
-  };
 
   const analyzeResumeContent = async () => {
     setIsAnalyzing(true);
@@ -69,6 +62,7 @@ const ATSChecker = () => {
           description: "Please upload a PDF file",
           variant: "destructive",
         });
+        setIsUploading(false);
         return;
       }
 
@@ -78,6 +72,7 @@ const ATSChecker = () => {
           description: "Please upload a PDF file smaller than 5MB",
           variant: "destructive",
         });
+        setIsUploading(false);
         return;
       }
 
@@ -126,7 +121,8 @@ const ATSChecker = () => {
             variant: "destructive"
           });
         } else {
-          setShowPaymentDialog(true);
+          // Directly analyze resume instead of showing payment dialog
+          analyzeResumeContent();
         }
       }
     } catch (error) {
@@ -168,10 +164,10 @@ const ATSChecker = () => {
           <CardHeader className="bg-primary/5">
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
-              95%+ ATS Compatibility Guarantee
+              Free ATS Analysis Tool
             </CardTitle>
             <CardDescription>
-              All resumes created with SXO Resume are guaranteed to achieve at least 95% ATS compatibility
+              Check your resume's ATS compatibility with our free analyzer tool
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -211,10 +207,10 @@ const ATSChecker = () => {
             <div className="flex flex-col items-center space-y-4">
               <Upload className="h-12 w-12 text-gray-400" />
               <Button disabled={isUploading || isAnalyzing}>
-                {isUploading ? (
+                {isUploading || isAnalyzing ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                {isUploading ? 'Analyzing...' : 'Check Now'}
+                {isUploading || isAnalyzing ? 'Analyzing...' : 'Check Now - Free'}
               </Button>
               <p className="text-sm text-gray-500">Upload your resume in PDF format (max 5MB)</p>
             </div>
@@ -236,7 +232,7 @@ const ATSChecker = () => {
                 <AlertTitle className="text-amber-700">ATS Compatibility Needs Improvement</AlertTitle>
                 <AlertDescription className="text-amber-700">
                   Your resume may not pass through some ATS systems. Consider using our resume builder to create an 
-                  ATS-optimized version with a minimum 80% compatibility guarantee.
+                  ATS-optimized version with a minimum 95% compatibility guarantee.
                 </AlertDescription>
               </Alert>
             )}
@@ -246,7 +242,7 @@ const ATSChecker = () => {
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 <AlertTitle className="text-green-700">ATS Compatible</AlertTitle>
                 <AlertDescription className="text-green-700">
-                  Your resume meets our 80%+ ATS compatibility guarantee and should pass through most Applicant 
+                  Your resume meets our 95%+ ATS compatibility guarantee and should pass through most Applicant 
                   Tracking Systems successfully.
                 </AlertDescription>
               </Alert>
@@ -286,16 +282,8 @@ const ATSChecker = () => {
           </div>
         )}
       </div>
-
-      <PaymentDialog
-        open={showPaymentDialog}
-        onOpenChange={setShowPaymentDialog}
-        onSuccess={handlePaymentSuccess}
-        isAtsCheck={true}
-      />
     </div>
   );
 };
 
 export default ATSChecker;
-
