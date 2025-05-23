@@ -28,6 +28,7 @@ export const exportToFormat = async (format: string = 'pdf') => {
   
   // Capture original styles to restore later
   const originalStyles = element.getAttribute('style') || '';
+  const originalHTML = element.innerHTML;
   
   // Apply print-specific styles based on device
   const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
@@ -36,6 +37,16 @@ export const exportToFormat = async (format: string = 'pdf') => {
   // Enhanced styling for better print results with GPU acceleration
   element.setAttribute('style', `${originalStyles}; width: 100%; max-width: 8.5in; margin: 0 auto; background-color: white !important; transform: translateZ(0);`);
   element.classList.add('gpu-accelerated');
+
+  // Add watermark to the resume
+  const watermarkDiv = document.createElement('div');
+  watermarkDiv.className = 'watermark';
+  watermarkDiv.innerHTML = `
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; font-size: 10px; color: rgba(100, 100, 100, 0.6); font-style: italic; z-index: 1000;">
+      Build your resume with www.sxoresumebuilder.site
+    </div>
+  `;
+  element.appendChild(watermarkDiv);
 
   // Accessibility notification
   const accessibilityMessage = document.createElement('div');
@@ -139,7 +150,8 @@ export const exportToFormat = async (format: string = 'pdf') => {
     console.error('Error generating document:', error);
     throw error;
   } finally {
-    // Always reset the styles and remove indicators
+    // Always restore original content and styles
+    element.innerHTML = originalHTML;
     element.setAttribute('style', originalStyles);
     element.classList.remove('gpu-accelerated');
     
@@ -179,6 +191,20 @@ export const fallbackExport = (format: string = 'pdf') => {
   clone.style.padding = '0.5in';
   clone.classList.add('gpu-accelerated', 'optimize-paint');
   
+  // Add watermark to the cloned element
+  const watermarkDiv = document.createElement('div');
+  watermarkDiv.style.position = 'fixed';
+  watermarkDiv.style.bottom = '10px';
+  watermarkDiv.style.left = '0';
+  watermarkDiv.style.right = '0';
+  watermarkDiv.style.textAlign = 'center';
+  watermarkDiv.style.fontSize = '10px';
+  watermarkDiv.style.color = 'rgba(100, 100, 100, 0.6)';
+  watermarkDiv.style.fontStyle = 'italic';
+  watermarkDiv.style.zIndex = '1000';
+  watermarkDiv.innerText = 'Build your resume with www.sxoresumebuilder.site';
+  clone.appendChild(watermarkDiv);
+  
   // Open in a new window and trigger print with optimized rendering
   const printWindow = window.open('', '_blank');
   if (printWindow) {
@@ -197,6 +223,17 @@ export const fallbackExport = (format: string = 'pdf') => {
               backface-visibility: hidden;
               -webkit-backface-visibility: hidden;
             }
+            .watermark {
+              position: fixed;
+              bottom: 10px;
+              left: 0;
+              right: 0;
+              text-align: center;
+              font-size: 10px;
+              color: rgba(100, 100, 100, 0.6);
+              font-style: italic;
+              z-index: 1000;
+            }
             @media print {
               body { 
                 margin: 0; 
@@ -211,6 +248,7 @@ export const fallbackExport = (format: string = 'pdf') => {
         </head>
         <body>
           ${clone.outerHTML}
+          <div class="watermark">Build your resume with www.sxoresumebuilder.site</div>
           <script>
             // Optimized print process
             const printWithDelay = () => {
@@ -234,3 +272,4 @@ export const fallbackExport = (format: string = 'pdf') => {
     printWindow.document.close();
   }
 };
+
