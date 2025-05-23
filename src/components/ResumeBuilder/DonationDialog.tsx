@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Wallet, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface DonationDialogProps {
   open: boolean;
@@ -19,21 +18,19 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
   const [donationAmount, setDonationAmount] = useState(399);
   const [showQR, setShowQR] = useState(false);
   const [hasDonated, setHasDonated] = useState(checkDonationStatus());
-  const [format, setFormat] = useState(selectedFormat || 'pdf');
 
   // Handle dialog opening/closing
   useEffect(() => {
     if (open) {
       setHasDonated(checkDonationStatus());
-      setFormat(selectedFormat || 'pdf');
     }
-  }, [open, selectedFormat]);
+  }, [open]);
 
   // Function to handle donation completion
   const handleComplete = () => {
     markDonationComplete();
     setHasDonated(true);
-    onSuccess(format);
+    onSuccess(selectedFormat);
     onOpenChange(false);
   };
 
@@ -58,29 +55,6 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
 
         {!hasDonated && !showQR && (
           <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="format-selection">Select Format</Label>
-              <RadioGroup
-                id="format-selection"
-                value={format}
-                onValueChange={setFormat}
-                className="grid grid-cols-3 gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="pdf" id="pdf" />
-                  <Label htmlFor="pdf">PDF</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="docx" id="docx" />
-                  <Label htmlFor="docx">DOCX</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="doc" id="doc" />
-                  <Label htmlFor="doc">DOC</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="donation-amount">Donation Amount (₹)</Label>
               <Input
@@ -133,30 +107,7 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
 
         {hasDonated && (
           <div className="py-4">
-            <div className="space-y-2 mb-4">
-              <Label htmlFor="format-selection">Select Format</Label>
-              <RadioGroup
-                id="format-selection"
-                value={format}
-                onValueChange={setFormat}
-                className="grid grid-cols-3 gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="pdf" id="pdf" />
-                  <Label htmlFor="pdf">PDF</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="docx" id="docx" />
-                  <Label htmlFor="docx">DOCX</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="doc" id="doc" />
-                  <Label htmlFor="doc">DOC</Label>
-                </div>
-              </RadioGroup>
-            </div>
-            
-            <Button onClick={() => onSuccess(format)} className="w-full">
+            <Button onClick={() => onSuccess(selectedFormat)} className="w-full">
               <Download className="mr-2 h-4 w-4" />
               Download Resume
             </Button>

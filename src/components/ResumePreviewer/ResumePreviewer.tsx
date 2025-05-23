@@ -1,19 +1,12 @@
-
 import { calculateResumeScore } from '@/utils/algorithms';
 import { useEffect, useState, memo } from 'react';
-import { AlertCircle, CheckCircle, Download, ChevronDown } from 'lucide-react';
+import { AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
 import { exportToFormat } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
 import { checkDonationStatus } from '@/utils/donationUtils';
 import DonationDialog from '@/components/ResumeBuilder/DonationDialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface ResumePreviewerProps {
   data: {
@@ -123,6 +116,11 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
         </div>
       </div>
     )}
+
+    {/* ATS Optimization Notice - Hidden for print */}
+    <div className="mt-6 text-center text-2xs sm:text-xs text-gray-500 print:hidden">
+      <p>This resume is optimized for Applicant Tracking Systems</p>
+    </div>
   </div>
 ));
 
@@ -135,21 +133,11 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
   const { toast } = useToast();
   const [donationDialogOpen, setDonationDialogOpen] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState("pdf");
-  const formatOptions = [
-    { value: "pdf", label: "PDF" },
-    { value: "docx", label: "DOCX" },
-    { value: "doc", label: "DOC" }
-  ];
 
   // Use useEffect to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  // Format label for display
-  const getFormatLabel = (format: string) => {
-    return format.toUpperCase();
-  };
   
   const handleDownload = async () => {
     const isDonated = checkDonationStatus();
@@ -164,7 +152,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
       await exportToFormat(selectedFormat);
       toast({
         title: "Success",
-        description: `Your resume is downloading as ${getFormatLabel(selectedFormat)}!`,
+        description: "Your resume is downloading automatically!",
         variant: "default"
       });
     } catch (error) {
@@ -235,35 +223,14 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
           </TooltipProvider>
 
           <div className="absolute top-2 left-2 z-10">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  size="sm"
-                  className="flex items-center gap-1"
-                >
-                  <Download className="w-3 h-3" />
-                  Download {getFormatLabel(selectedFormat)}
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {formatOptions.map((format) => (
-                  <DropdownMenuItem 
-                    key={format.value}
-                    onClick={() => {
-                      setSelectedFormat(format.value);
-                      // After a short delay, trigger download if already donated
-                      if (checkDonationStatus()) {
-                        setTimeout(() => handleDownload(), 100);
-                      }
-                    }}
-                    className={selectedFormat === format.value ? "bg-muted" : ""}
-                  >
-                    {format.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button 
+              onClick={handleDownload}
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <Download className="w-3 h-3" />
+              Download PDF
+            </Button>
           </div>
         </>
       )}
