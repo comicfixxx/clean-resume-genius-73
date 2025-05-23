@@ -116,11 +116,6 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
         </div>
       </div>
     )}
-
-    {/* ATS Optimization Notice - Hidden for print */}
-    <div className="mt-6 text-center text-2xs sm:text-xs text-gray-500 print:hidden">
-      <p>This resume is optimized for Applicant Tracking Systems</p>
-    </div>
   </div>
 ));
 
