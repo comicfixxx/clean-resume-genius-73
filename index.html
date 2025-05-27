@@ -33,8 +33,11 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- QRCode.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     
     <!-- DonatingWidget HTML -->
     <div id="donating-widget-container"></div>
@@ -59,7 +62,7 @@
                     bottom: 20px;
                     right: 20px;
                     z-index: 9999;">
-            <button style="display: flex;
+            <button id="donation-button" style="display: flex;
                           align-items: center;
                           gap: 8px;
                           background-color: ${config.primaryColor};
@@ -71,10 +74,7 @@
                           font-size: 14px;
                           cursor: pointer;
                           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                          transition: all 0.3s ease;"
-                    onmouseover="this.style.boxShadow='0 6px 8px rgba(0, 0, 0, 0.2)';"
-                    onmouseout="this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';"
-                    onclick="openDonationDialog()">
+                          transition: all 0.3s ease;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="white"/>
               </svg>
@@ -83,10 +83,14 @@
           </div>
         `;
         
-        document.getElementById('donating-widget-container').appendChild(widget);
+        const container = document.getElementById('donating-widget-container');
+        if (container) {
+          container.appendChild(widget);
+        }
         
         // Create dialog elements
         const modal = document.createElement('div');
+        modal.id = 'donation-modal';
         modal.style.display = 'none';
         modal.style.position = 'fixed';
         modal.style.top = '0';
@@ -105,22 +109,26 @@
         dialog.style.width = '90%';
         dialog.style.maxWidth = '320px';
         dialog.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
+        dialog.style.position = 'relative';
         
         // Close button
         const closeButton = document.createElement('button');
         closeButton.innerHTML = '&times;';
-        closeButton.style.float = 'right';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '15px';
         closeButton.style.border = 'none';
         closeButton.style.background = 'transparent';
         closeButton.style.fontSize = '24px';
         closeButton.style.cursor = 'pointer';
-        closeButton.onclick = closeDonationDialog;
+        closeButton.style.lineHeight = '1';
         
         // Title
         const title = document.createElement('h3');
         title.textContent = 'Support Us';
         title.style.margin = '0 0 10px 0';
         title.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        title.style.paddingRight = '30px';
         
         // Description
         const description = document.createElement('p');
@@ -136,12 +144,17 @@
         qrContainer.style.justifyContent = 'center';
         qrContainer.style.marginBottom = '20px';
         
-        const qrImage = document.createElement('img');
-        qrImage.src = '/lovable-uploads/c73b380c-4839-40a6-afb7-b3046b37512d.png';
-        qrImage.alt = 'Donation QR Code';
-        qrImage.style.width = '200px';
-        qrImage.style.height = '200px';
-        qrContainer.appendChild(qrImage);
+        const qrPlaceholder = document.createElement('div');
+        qrPlaceholder.id = 'qr-code';
+        qrPlaceholder.style.width = '200px';
+        qrPlaceholder.style.height = '200px';
+        qrPlaceholder.style.backgroundColor = '#f1f1f1';
+        qrPlaceholder.style.display = 'flex';
+        qrPlaceholder.style.alignItems = 'center';
+        qrPlaceholder.style.justifyContent = 'center';
+        qrPlaceholder.style.borderRadius = '8px';
+        qrPlaceholder.textContent = 'Loading QR Code...';
+        qrContainer.appendChild(qrPlaceholder);
         
         // Input field for amount
         const inputContainer = document.createElement('div');
@@ -163,6 +176,7 @@
         amountInput.style.border = '1px solid #ddd';
         amountInput.style.borderRadius = '4px';
         amountInput.style.textAlign = 'right';
+        amountInput.style.boxSizing = 'border-box';
         
         inputContainer.appendChild(amountLabel);
         inputContainer.appendChild(amountInput);
@@ -194,14 +208,92 @@
         modal.appendChild(dialog);
         document.body.appendChild(modal);
         
-        // Functions
-        window.openDonationDialog = function() {
-          modal.style.display = 'flex';
-        };
+        // Event listeners
+        const donationButton = widget.querySelector('#donation-button');
+        if (donationButton) {
+          donationButton.addEventListener('mouseover', function() {
+            this.style.boxShadow = '0 6px 8px rgba(0, 0, 0, 0.2)';
+          });
+          
+          donationButton.addEventListener('mouseout', function() {
+            this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          });
+          
+          donationButton.addEventListener('click', openDonationDialog);
+        }
         
-        window.closeDonationDialog = function() {
+        closeButton.addEventListener('click', closeDonationDialog);
+        amountInput.addEventListener('change', generateQR);
+        amountInput.addEventListener('input', generateQR);
+        
+        // Click outside to close
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            closeDonationDialog();
+          }
+        });
+        
+        // Functions
+        function openDonationDialog() {
+          modal.style.display = 'flex';
+          generateQR();
+        }
+        
+        function closeDonationDialog() {
           modal.style.display = 'none';
-        };
+        }
+        
+        async function generateQR() {
+          try {
+            // Wait for QRCode library to be available
+            if (typeof QRCode === 'undefined') {
+              console.log('QRCode library not yet loaded, retrying...');
+              setTimeout(generateQR, 100);
+              return;
+            }
+            
+            const amount = document.getElementById('donation-amount').value;
+            const qrContainer = document.getElementById('qr-code');
+            
+            if (!qrContainer) return;
+            
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+            
+            // Create the UPI URL for donation
+            const upiUrl = `upi://pay?pa=${config.upiId}&pn=${encodeURIComponent(config.name)}&am=${amount}&tn=${encodeURIComponent('Donation for Resume Builder')}`;
+            
+            // Generate QR code
+            QRCode.toCanvas(qrContainer, upiUrl, { 
+              width: 200,
+              margin: 1,
+              color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+              }
+            }, function(error) {
+              if (error) {
+                console.error('Error generating QR code:', error);
+                qrContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Failed to generate QR code</div>';
+              }
+            });
+          } catch (error) {
+            console.error('Error in generateQR function:', error);
+            const qrContainer = document.getElementById('qr-code');
+            if (qrContainer) {
+              qrContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Error loading QR code</div>';
+            }
+          }
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('Donation widget initialized');
+          });
+        } else {
+          console.log('Donation widget initialized');
+        }
       })();
     </script>
   </body>
