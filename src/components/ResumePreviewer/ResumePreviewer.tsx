@@ -1,6 +1,6 @@
 
 import { calculateResumeScore } from '@/utils/algorithms';
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useCallback } from 'react';
 import { AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
@@ -19,10 +19,10 @@ interface ResumePreviewerProps {
   isPaid?: boolean;
 }
 
-// Memoize the preview content for better performance
+// Memoized preview content component
 const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) => (
-  <div className="max-w-[850px] mx-auto p-3 sm:p-4 md:p-6 lg:p-8 print:p-6 optimize-paint bg-white">
-    {/* Personal Information Section - Always visible and clearly formatted */}
+  <div className="max-w-[850px] mx-auto p-3 sm:p-4 md:p-6 lg:p-8 print:p-6 bg-white">
+    {/* Personal Information Section */}
     <div className="text-center border-b-2 border-gray-300 pb-4 mb-6">
       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3" data-ats-name="true">
         {data.personal?.fullName || 'Your Name'}
@@ -58,7 +58,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       </div>
     )}
 
-    {/* Work Experience Section - Always show header */}
+    {/* Work Experience Section */}
     <div className="mb-6">
       <h2 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wide" data-ats-section="experience">
         Work Experience
@@ -66,7 +66,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       {data.experience && data.experience.length > 0 ? (
         <div className="space-y-4">
           {data.experience.map((exp, index) => (
-            <div key={index} className="pl-0" data-ats-experience-item="true">
+            <div key={`exp-${index}`} className="pl-0" data-ats-experience-item="true">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-gray-900 text-base" data-ats-job-title="true">
                   {exp.position}
@@ -89,7 +89,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       )}
     </div>
 
-    {/* Education Section - Always show header */}
+    {/* Education Section */}
     <div className="mb-6">
       <h2 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wide" data-ats-section="education">
         Education
@@ -97,7 +97,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       {data.education && data.education.length > 0 ? (
         <div className="space-y-3">
           {data.education.map((edu, index) => (
-            <div key={index} data-ats-education-item="true">
+            <div key={`edu-${index}`} data-ats-education-item="true">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-semibold text-gray-900 text-base" data-ats-school="true">
                   {edu.school}
@@ -117,7 +117,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       )}
     </div>
 
-    {/* Skills Section - Always show header */}
+    {/* Skills Section */}
     <div className="mb-6">
       <h2 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wide" data-ats-section="skills">
         Skills
@@ -126,7 +126,7 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2" data-ats-skills-list="true">
           {data.skills.map((skill, index) => (
             <span
-              key={index}
+              key={`skill-${index}`}
               className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm text-center"
               data-ats-skill="true"
             >
@@ -151,19 +151,17 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
 PreviewContent.displayName = 'PreviewContent';
 
 export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerProps) => {
-  // Calculate ATS score based on content
   const atsScore = calculateResumeScore(data);
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
   const [donationDialogOpen, setDonationDialogOpen] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState("pdf");
 
-  // Use useEffect to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
   
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     const isDonated = checkDonationStatus();
     
     if (!isDonated) {
@@ -171,7 +169,6 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
       return;
     }
     
-    // If donation is already completed, directly download
     try {
       await exportToFormat(selectedFormat);
       toast({
@@ -187,9 +184,27 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
         variant: "destructive"
       });
     }
-  };
+  }, [selectedFormat, toast]);
 
-  const getScoreBadge = () => {
+  const handleDonationSuccess = useCallback(async (format?: string) => {
+    try {
+      await exportToFormat(format || selectedFormat);
+      toast({
+        title: "Success",
+        description: "Thank you for your donation! Your resume is downloading.",
+        variant: "success"
+      });
+    } catch (error) {
+      console.error("Error during export:", error);
+      toast({
+        title: "Export Error",
+        description: "There was an error downloading your resume. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }, [selectedFormat, toast]);
+
+  const getScoreBadge = useCallback(() => {
     if (atsScore >= 95) {
       return (
         <div className="flex items-center gap-1 text-green-500">
@@ -212,7 +227,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
         </div>
       );
     }
-  };
+  }, [atsScore]);
   
   return (
     <div className="bg-white rounded-lg shadow-sm relative">
@@ -255,23 +270,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
       <DonationDialog 
         open={donationDialogOpen} 
         onOpenChange={setDonationDialogOpen} 
-        onSuccess={async (format) => {
-          try {
-            await exportToFormat(format || selectedFormat);
-            toast({
-              title: "Success",
-              description: "Thank you for your donation! Your resume is downloading.",
-              variant: "default"
-            });
-          } catch (error) {
-            console.error("Error during export:", error);
-            toast({
-              title: "Export Error",
-              description: "There was an error downloading your resume. Please try again.",
-              variant: "destructive"
-            });
-          }
-        }}
+        onSuccess={handleDonationSuccess}
         selectedFormat={selectedFormat}
       />
     </div>

@@ -3,14 +3,14 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { setupLazyLoadImages, preloadCriticalResources } from '@/utils/performanceUtils';
 import { addPreconnectLinks, registerServiceWorker } from '@/utils/responsiveUtils';
 
-// Lazy-loaded components for better initial load performance
+// Lazy-loaded components
 const Home = lazy(() => import("@/pages/Home"));
 const Index = lazy(() => import("@/pages/Index"));
 const About = lazy(() => import("@/pages/About"));
@@ -24,14 +24,14 @@ const Splash = lazy(() => import("@/pages/Splash"));
 const Pricing = lazy(() => import("@/pages/Pricing"));
 const CareerTips = lazy(() => import("@/pages/CareerTips"));
 
-// Loading component for Suspense
+// Loading component
 const Loading = () => (
   <div className="flex justify-center items-center min-h-[60vh]">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
   </div>
 );
 
-// Initialize QueryClient with optimized configuration
+// Initialize QueryClient
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -40,56 +40,48 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      gcTime: 5 * 60 * 1000, // Using gcTime instead of deprecated cacheTime
+      gcTime: 5 * 60 * 1000,
     },
   },
 });
 
-// Preload critical resources
-const criticalResources = [
-  '/favicon.svg',
-  '/manifest.json',
-];
-
-// Important domains to preconnect to
+// Critical resources and domains
+const criticalResources = ['/favicon.svg', '/manifest.json'];
 const preconnectDomains = [
   'https://fonts.googleapis.com',
   'https://fonts.gstatic.com',
   'https://api.producthunt.com',
-  'https://cdn.jsdelivr.net' // Added for QR code library
+  'https://cdn.jsdelivr.net'
 ];
 
 const App: React.FC = () => {
-  const location = useLocation();
-  
-  // Set up performance optimizations when the app loads
   useEffect(() => {
-    // Preload critical resources
+    // Initialize performance optimizations
     preloadCriticalResources(criticalResources);
-    
-    // Initialize lazy loading for images
     setupLazyLoadImages();
-    
-    // Add preconnect links for performance
     addPreconnectLinks(preconnectDomains);
-    
-    // Register service worker for PWA capabilities
     registerServiceWorker();
     
-    // Add event listener for web vitals measurement
+    // Performance monitoring
     if ('performance' in window && 'measure' in window.performance) {
       window.addEventListener('load', () => {
-        // Use setTimeout to ensure this runs after initial rendering
         setTimeout(() => {
           const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
           if (navigationTiming) {
-            console.log(`Time to first byte: ${navigationTiming.responseStart}ms`);
-            console.log(`DOM Content Loaded: ${navigationTiming.domContentLoadedEventEnd}ms`);
-            console.log(`Load event: ${navigationTiming.loadEventEnd}ms`);
+            console.log(`Performance metrics:`, {
+              TTFB: navigationTiming.responseStart,
+              DOMContentLoaded: navigationTiming.domContentLoadedEventEnd,
+              LoadEvent: navigationTiming.loadEventEnd
+            });
           }
-        }, 0);
+        }, 100);
       });
     }
+
+    // Cleanup function
+    return () => {
+      // Clean up any global event listeners or timers if needed
+    };
   }, []);
 
   return (
@@ -101,7 +93,7 @@ const App: React.FC = () => {
             <Navbar />
             <main 
               id="main-content" 
-              className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
+              className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8"
             >
               <Suspense fallback={<Loading />}>
                 <Routes>

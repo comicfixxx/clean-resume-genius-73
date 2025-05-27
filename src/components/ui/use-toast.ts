@@ -1,3 +1,3 @@
 
-// Forward exports from the hooks implementation
+// Unified toast exports
 export { useToast, toast, type UseToastReturnType, type Toast } from "@/hooks/use-toast";
