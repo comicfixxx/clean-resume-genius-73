@@ -3,6 +3,13 @@ import { Heart, Coffee, Gift } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+// Extend the Window interface to include our donation dialog function
+declare global {
+  interface Window {
+    openDonationDialog?: () => void;
+  }
+}
+
 export const PricingPlans = () => {
   const handleDonateClick = () => {
     // This will trigger the existing donation widget
