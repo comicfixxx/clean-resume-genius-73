@@ -102,6 +102,7 @@ if (!root) {
   throw new Error('Root element not found');
 }
 
+// Wrap the entire app with BrowserRouter to ensure all Link components have access to Router context
 createRoot(root).render(
   <React.StrictMode>
     <BrowserRouter>
