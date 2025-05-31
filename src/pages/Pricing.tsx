@@ -13,16 +13,17 @@ const Pricing = () => {
       
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h1>
-          <p className="text-xl text-gray-600">Choose the plan that works best for you</p>
+          <h1 className="text-4xl font-bold mb-4">Support Our Mission</h1>
+          <p className="text-xl text-gray-600">Help us keep resume building free for everyone</p>
         </div>
 
         <PricingPlans />
 
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-semibold mb-6">Not sure which plan to choose?</h2>
+          <h2 className="text-2xl font-semibold mb-6">Ready to create your resume?</h2>
+          <p className="text-gray-600 mb-6">Our resume builder is completely free to use!</p>
           <Link to="/builder">
-            <Button size="lg">Try Resume Builder Now</Button>
+            <Button size="lg">Start Building Your Resume</Button>
           </Link>
         </div>
       </div>
