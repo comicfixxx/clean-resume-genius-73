@@ -1,72 +1,64 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Plus, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-interface EducationFormProps {
-  isActive: boolean;
-  onComplete: (data: any) => void;
-  onTypeChange?: (isSelfLearner: boolean) => void;
+interface EducationItem {
+  institution: string;
+  degree: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
 }
 
-export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationFormProps) => {
-  const [education, setEducation] = useState([{
-    school: "",
-    degree: "",
-    field: "",
-    startDate: "",
-    endDate: "",
-  }]);
+interface EducationFormProps {
+  education: EducationItem[];
+  updateEducation: (education: EducationItem[]) => void;
+  addEducation: () => void;
+  removeEducation: (index: number) => void;
+  updateEducationItem: (index: number, updatedItem: EducationItem) => void;
+  educationCount: number;
+}
+
+export const EducationForm = ({ education, updateEducation, addEducation, removeEducation, updateEducationItem, educationCount }: EducationFormProps) => {
   const [isSelfLearner, setIsSelfLearner] = useState(false);
-
-  const handleAddEducation = () => {
-    if (isSelfLearner) return;
-    setEducation(prev => [...prev, {
-      school: "",
-      degree: "",
-      field: "",
-      startDate: "",
-      endDate: "",
-    }]);
-  };
-
-  const handleRemoveEducation = (index: number) => {
-    setEducation(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete({ education, isSelfLearner });
+    // Form submission handled by parent
   };
 
   const handleSelfLearnerChange = (checked: boolean) => {
     setIsSelfLearner(checked);
     if (checked) {
-      setEducation([{
-        school: "Self-Taught",
+      // Replace with self-learner entry
+      updateEducation([{
+        institution: "Self-Taught",
         degree: "Independent Learning",
-        field: "",
+        location: "",
         startDate: "",
         endDate: "",
+        description: "",
       }]);
     } else {
-      setEducation([{
-        school: "",
+      // Reset to empty education
+      updateEducation([{
+        institution: "",
         degree: "",
-        field: "",
+        location: "",
         startDate: "",
         endDate: "",
+        description: "",
       }]);
-    }
-    if (onTypeChange) {
-      onTypeChange(checked);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="section-title">
+      <h2 className="section-title flex items-center gap-2 text-xl font-semibold mb-4">
         <GraduationCap className="w-5 h-5" />
         Education
       </h2>
@@ -94,7 +86,7 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
                 type="button"
                 variant="destructive"
                 size="sm"
-                onClick={() => handleRemoveEducation(index)}
+                onClick={() => removeEducation(index)}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -103,13 +95,11 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-group">
-              <label className="text-sm font-medium text-gray-700">School/Institution</label>
+              <label className="text-sm font-medium text-gray-700">Institution</label>
               <Input
-                value={edu.school}
+                value={edu.institution}
                 onChange={(e) => {
-                  const newEducation = [...education];
-                  newEducation[index].school = e.target.value;
-                  setEducation(newEducation);
+                  updateEducationItem(index, { ...edu, institution: e.target.value });
                 }}
                 placeholder="Institution name"
                 required
@@ -118,13 +108,11 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
             </div>
 
             <div className="form-group">
-              <label className="text-sm font-medium text-gray-700">Degree/Certification</label>
+              <label className="text-sm font-medium text-gray-700">Degree</label>
               <Input
                 value={edu.degree}
                 onChange={(e) => {
-                  const newEducation = [...education];
-                  newEducation[index].degree = e.target.value;
-                  setEducation(newEducation);
+                  updateEducationItem(index, { ...edu, degree: e.target.value });
                 }}
                 placeholder="Degree or certification"
                 required
@@ -133,16 +121,25 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
             </div>
 
             <div className="form-group">
-              <label className="text-sm font-medium text-gray-700">Field of Study</label>
+              <label className="text-sm font-medium text-gray-700">Location</label>
               <Input
-                value={edu.field}
+                value={edu.location}
                 onChange={(e) => {
-                  const newEducation = [...education];
-                  newEducation[index].field = e.target.value;
-                  setEducation(newEducation);
+                  updateEducationItem(index, { ...edu, location: e.target.value });
                 }}
-                placeholder="Field of study"
+                placeholder="City, State"
                 required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="text-sm font-medium text-gray-700">Description</label>
+              <Input
+                value={edu.description}
+                onChange={(e) => {
+                  updateEducationItem(index, { ...edu, description: e.target.value });
+                }}
+                placeholder="Additional details"
               />
             </div>
 
@@ -153,9 +150,7 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
                   type="month"
                   value={edu.startDate}
                   onChange={(e) => {
-                    const newEducation = [...education];
-                    newEducation[index].startDate = e.target.value;
-                    setEducation(newEducation);
+                    updateEducationItem(index, { ...edu, startDate: e.target.value });
                   }}
                   required
                 />
@@ -167,9 +162,7 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
                   type="month"
                   value={edu.endDate}
                   onChange={(e) => {
-                    const newEducation = [...education];
-                    newEducation[index].endDate = e.target.value;
-                    setEducation(newEducation);
+                    updateEducationItem(index, { ...edu, endDate: e.target.value });
                   }}
                 />
               </div>
@@ -182,17 +175,13 @@ export const EducationForm = ({ isActive, onComplete, onTypeChange }: EducationF
         <Button
           type="button"
           variant="outline"
-          onClick={handleAddEducation}
+          onClick={addEducation}
           className="flex items-center gap-2 mb-4"
         >
           <Plus className="w-4 h-4" />
           Add Education
         </Button>
       )}
-
-      <Button type="submit" className="w-full">
-        Save Education
-      </Button>
     </form>
   );
 };

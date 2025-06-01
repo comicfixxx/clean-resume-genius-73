@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, CheckCircle2, Lightbulb } from "lucide-react";
@@ -178,6 +179,14 @@ const Index = () => {
     });
   };
 
+  // Transform data for ResumePreviewer
+  const previewData = useMemo(() => ({
+    personal: resumeData.personalInfo,
+    experience: resumeData.experience,
+    education: resumeData.education,
+    skills: resumeData.skills,
+  }), [resumeData]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SeoKeywords page="builder" />
@@ -234,7 +243,7 @@ const Index = () => {
 
           {/* Preview Section */}
           <div className="lg:sticky lg:top-8">
-            <ResumePreviewer data={resumeData} />
+            <ResumePreviewer data={previewData} />
           </div>
         </div>
       </div>
