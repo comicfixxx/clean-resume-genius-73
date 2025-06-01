@@ -7,6 +7,7 @@ import { Features } from "@/components/Features/Features";
 import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { AffiliateSection } from "@/components/AffiliateProgram/AffiliateSection";
 import { WhiteLabelRequestForm } from "@/components/WhiteLabel/WhiteLabelRequestForm";
+import { DonationWidget } from "@/components/DonationWidget/DonationWidget";
 import SeoKeywords from "@/components/SEO/SeoKeywords";
 import SeoStructuredData from "@/components/SEO/SeoStructuredData";
 
@@ -95,6 +96,18 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Donation Widget */}
+      <DonationWidget 
+        config={{
+          upiId: 'adnanmuhammad4393@okicici',
+          name: 'Muhammed Adnan',
+          amount: 99,
+          position: 'bottom-right',
+          primaryColor: '#8B5CF6',
+          buttonText: 'Donate ₹99'
+        }}
+      />
     </div>
   );
 };
