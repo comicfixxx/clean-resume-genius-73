@@ -11,10 +11,10 @@ import SeoKeywords from "@/components/SEO/SeoKeywords";
 import SeoStructuredData from "@/components/SEO/SeoStructuredData";
 
 const Home = () => {
-  const {
-    toast
-  } = useToast();
-  return <div className="min-h-screen">
+  const { toast } = useToast();
+  
+  return (
+    <div className="min-h-screen">
       <SeoKeywords page="home" />
       <SeoStructuredData type="home" />
       
@@ -24,8 +24,23 @@ const Home = () => {
       {/* Features Section */}
       <Features />
 
-      {/* Pricing Section */}
-      <PricingPlans />
+      {/* Donation Support Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-6">Free for Everyone</h2>
+          <p className="text-xl text-gray-600 mb-8">
+            Our resume builder is completely free to use, supported by voluntary donations from our community.
+          </p>
+          <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
+            <p className="text-gray-700 mb-4">
+              When you download your resume, you'll have the option to make a small donation to help us keep this service free for everyone.
+            </p>
+            <p className="text-sm text-gray-500">
+              No payment required • Donation optional • Always free
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Affiliate Program Section */}
       <AffiliateSection />
@@ -34,7 +49,7 @@ const Home = () => {
       <WhiteLabelRequestForm />
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Build Your Professional Resume?</h2>
           
@@ -80,6 +95,8 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default Home;
