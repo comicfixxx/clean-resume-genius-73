@@ -1,7 +1,7 @@
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, CheckCircle2, Lightbulb } from "lucide-react";
+import { Download } from "lucide-react";
 import { PersonalInfoForm } from "@/components/ResumeForm/PersonalInfoForm";
 import { ExperienceForm } from "@/components/ResumeForm/ExperienceForm";
 import { EducationForm } from "@/components/ResumeForm/EducationForm";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { TutorialSection } from "@/components/ResumeBuilder/TutorialSection";
 import SeoKeywords from "@/components/SEO/SeoKeywords";
 import SeoStructuredData from "@/components/SEO/SeoStructuredData";
-import { triggerDownload } from "@/utils/simpleDownloadUtils";
+import { exportToFormat } from "@/utils/pdfExport";
 
 interface ResumeData {
   personalInfo: {
@@ -62,6 +62,7 @@ const defaultResumeData: ResumeData = {
 
 const Index = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const { toast } = useToast();
 
   const updatePersonalInfo = useCallback(
@@ -92,22 +93,25 @@ const Index = () => {
     []
   );
 
-  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
-
   const handleDownloadClick = () => {
     setShowDownloadDialog(true);
   };
 
-  const handleDownloadSuccess = (format: string) => {
-    triggerDownload(format);
-    toast({
-      title: "Thank you!",
-      description: "Your download has started. Thanks for supporting our platform!",
-    });
+  const handleDownloadSuccess = async (format: string) => {
+    try {
+      await exportToFormat(format);
+      toast({
+        title: "Success!",
+        description: "Your resume is downloading. Thank you for your support!",
+      });
+    } catch (error) {
+      toast({
+        title: "Download Error",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
   };
-
-  const experienceCount = resumeData.experience.length;
-  const educationCount = resumeData.education.length;
 
   const addExperience = () => {
     setResumeData((prev) => ({
@@ -179,7 +183,6 @@ const Index = () => {
     });
   };
 
-  // Transform data for ResumePreviewer
   const previewData = useMemo(() => ({
     personal: resumeData.personalInfo,
     experience: resumeData.experience,
@@ -201,22 +204,19 @@ const Index = () => {
             Create your perfect resume in minutes - completely free!
           </p>
           
-          <div className="flex justify-center gap-4 mb-6">
-            <Button 
-              onClick={handleDownloadClick}
-              className="bg-primary hover:bg-primary/90"
-              size="lg"
-            >
-              <Download className="w-5 h-5 mr-2" />
-              Download Resume
-            </Button>
-          </div>
+          <Button 
+            onClick={handleDownloadClick}
+            className="bg-primary hover:bg-primary/90"
+            size="lg"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Download Resume
+          </Button>
         </div>
 
         <TutorialSection />
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Form Section */}
           <div className="space-y-8">
             <PersonalInfoForm
               personalInfo={resumeData.personalInfo}
@@ -228,7 +228,7 @@ const Index = () => {
               addExperience={addExperience}
               removeExperience={removeExperience}
               updateExperienceItem={updateExperienceItem}
-              experienceCount={experienceCount}
+              experienceCount={resumeData.experience.length}
             />
             <EducationForm
               education={resumeData.education}
@@ -236,12 +236,11 @@ const Index = () => {
               addEducation={addEducation}
               removeEducation={removeEducation}
               updateEducationItem={updateEducationItem}
-              educationCount={educationCount}
+              educationCount={resumeData.education.length}
             />
             <SkillsForm skills={resumeData.skills} updateSkills={updateSkills} />
           </div>
 
-          {/* Preview Section */}
           <div className="lg:sticky lg:top-8">
             <ResumePreviewer data={previewData} />
           </div>

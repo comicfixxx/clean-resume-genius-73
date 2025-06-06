@@ -24,7 +24,6 @@ interface ResumePreviewerProps {
   isPaid?: boolean;
 }
 
-// Memoized preview content component
 const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) => (
   <div className="max-w-[850px] mx-auto p-3 sm:p-4 md:p-6 lg:p-8 print:p-6 bg-white">
     <ErrorBoundary>
@@ -43,7 +42,6 @@ const PreviewContent = memo(({ data }: { data: ResumePreviewerProps['data'] }) =
       <SkillsSection data={data.skills} />
     </ErrorBoundary>
 
-    {/* Footer with watermark */}
     <div className="mt-8 pt-4 border-t border-gray-200 text-center">
       <p className="text-xs text-gray-500">
         Built with www.sxoresumebuilder.site
@@ -96,7 +94,6 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
       toast({
         title: "Success",
         description: "Thank you for your donation! Your resume is downloading.",
-        variant: "success"
       });
     } catch (error) {
       console.error("Error during export:", error);
