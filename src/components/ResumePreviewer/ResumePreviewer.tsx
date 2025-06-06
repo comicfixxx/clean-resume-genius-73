@@ -135,6 +135,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
   const { toast } = useToast();
   const [donationDialogOpen, setDonationDialogOpen] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState("pdf");
+  
   const formatOptions = [
     { value: "pdf", label: "PDF" },
     { value: "docx", label: "DOCX" },
@@ -151,24 +152,50 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
     return format.toUpperCase();
   };
   
-  const handleDownload = async () => {
+  const handleDownload = async (format?: string) => {
+    const formatToUse = format || selectedFormat;
     const isDonated = checkDonationStatus();
     
+    console.log('Download initiated:', { format: formatToUse, isDonated });
+    
     if (!isDonated) {
+      setSelectedFormat(formatToUse);
       setDonationDialogOpen(true);
       return;
     }
     
     // If donation is already completed, directly download
     try {
-      await exportToFormat(selectedFormat);
+      console.log('Starting export for format:', formatToUse);
+      await exportToFormat(formatToUse);
       toast({
         title: "Success",
-        description: `Your resume is downloading as ${getFormatLabel(selectedFormat)}!`,
-        variant: "default"
+        description: `Your resume is downloading as ${getFormatLabel(formatToUse)}!`,
+        variant: "success"
       });
     } catch (error) {
       console.error("Error during export:", error);
+      toast({
+        title: "Export Error", 
+        description: "There was an error downloading your resume. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDonationSuccess = async (format?: string) => {
+    const formatToUse = format || selectedFormat;
+    console.log('Donation completed, downloading:', formatToUse);
+    
+    try {
+      await exportToFormat(formatToUse);
+      toast({
+        title: "Success",
+        description: "Thank you for your donation! Your resume is downloading.",
+        variant: "success"
+      });
+    } catch (error) {
+      console.error("Error during export after donation:", error);
       toast({
         title: "Export Error",
         description: "There was an error downloading your resume. Please try again.",
@@ -242,7 +269,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
                   className="flex items-center gap-1"
                 >
                   <Download className="w-3 h-3" />
-                  Download {getFormatLabel(selectedFormat)}
+                  Download
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
@@ -250,16 +277,9 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
                 {formatOptions.map((format) => (
                   <DropdownMenuItem 
                     key={format.value}
-                    onClick={() => {
-                      setSelectedFormat(format.value);
-                      // After a short delay, trigger download if already donated
-                      if (checkDonationStatus()) {
-                        setTimeout(() => handleDownload(), 100);
-                      }
-                    }}
-                    className={selectedFormat === format.value ? "bg-muted" : ""}
+                    onClick={() => handleDownload(format.value)}
                   >
-                    {format.label}
+                    Download {format.label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -275,23 +295,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
       <DonationDialog 
         open={donationDialogOpen} 
         onOpenChange={setDonationDialogOpen} 
-        onSuccess={async (format) => {
-          try {
-            await exportToFormat(format || selectedFormat);
-            toast({
-              title: "Success",
-              description: "Thank you for your donation! Your resume is downloading.",
-              variant: "default"
-            });
-          } catch (error) {
-            console.error("Error during export:", error);
-            toast({
-              title: "Export Error",
-              description: "There was an error downloading your resume. Please try again.",
-              variant: "destructive"
-            });
-          }
-        }}
+        onSuccess={handleDonationSuccess}
         selectedFormat={selectedFormat}
       />
     </div>
