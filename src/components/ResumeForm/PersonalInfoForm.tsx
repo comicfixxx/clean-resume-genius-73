@@ -7,27 +7,55 @@ import { User, Mail, Phone, Globe, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PersonalInfoFormProps {
-  personalInfo: {
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    linkedin: string;
-    github: string;
-    portfolio: string;
-    objective: string;
+  isActive: boolean;
+  onComplete: (data: any) => void;
+  initialData?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    website?: string;
+    summary?: string;
   };
-  updatePersonalInfo: (info: PersonalInfoFormProps["personalInfo"]) => void;
 }
 
-export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalInfoFormProps) => {
+export const PersonalInfoForm = ({ isActive, onComplete, initialData = {} }: PersonalInfoFormProps) => {
   const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    fullName: initialData.fullName || "",
+    email: initialData.email || "",
+    phone: initialData.phone || "",
+    website: initialData.website || "",
+    summary: initialData.summary || ""
+  });
   
   const [errors, setErrors] = useState<{
     fullName?: string;
     email?: string;
     phone?: string;
   }>({});
+  
+  // Load saved data from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('resume_personal_info');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setFormData(prev => ({
+          ...prev,
+          ...parsedData
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading saved personal info:', error);
+    }
+  }, []);
+  
+  // Save data to localStorage when it changes
+  useEffect(() => {
+    if (Object.values(formData).some(val => val)) {
+      localStorage.setItem('resume_personal_info', JSON.stringify(formData));
+    }
+  }, [formData]);
 
   const validateForm = () => {
     const newErrors: {
@@ -36,17 +64,17 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
       phone?: string;
     } = {};
     
-    if (!personalInfo.fullName.trim()) {
+    if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
     }
     
-    if (!personalInfo.email.trim()) {
+    if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(personalInfo.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
     
-    if (personalInfo.phone && !/^(\+\d{1,3})?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(personalInfo.phone)) {
+    if (formData.phone && !/^(\+\d{1,3})?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(formData.phone)) {
       newErrors.phone = "Please enter a valid phone number";
     }
     
@@ -59,9 +87,11 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
     
     if (validateForm()) {
       // Store user information for payment flow
-      if (personalInfo.email) localStorage.setItem('user_email', personalInfo.email);
-      if (personalInfo.fullName) localStorage.setItem('user_name', personalInfo.fullName);
-      if (personalInfo.phone) localStorage.setItem('user_phone', personalInfo.phone);
+      if (formData.email) localStorage.setItem('user_email', formData.email);
+      if (formData.fullName) localStorage.setItem('user_name', formData.fullName);
+      if (formData.phone) localStorage.setItem('user_phone', formData.phone);
+      
+      onComplete(formData);
       
       toast({
         title: "Personal Information Saved",
@@ -96,8 +126,8 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
           </label>
           <Input
             id="fullName"
-            value={personalInfo.fullName}
-            onChange={(e) => updatePersonalInfo({ ...personalInfo, fullName: e.target.value })}
+            value={formData.fullName}
+            onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
             placeholder="John Doe"
             className={`border-secondary focus:border-accent ${errors.fullName ? 'border-red-300' : ''}`}
             required
@@ -120,8 +150,8 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
             <Input
               id="email"
               type="email"
-              value={personalInfo.email}
-              onChange={(e) => updatePersonalInfo({ ...personalInfo, email: e.target.value })}
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               className={`pl-10 border-secondary focus:border-accent ${errors.email ? 'border-red-300' : ''}`}
               placeholder="john@example.com"
               required
@@ -144,8 +174,8 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               id="phone"
-              value={personalInfo.phone}
-              onChange={(e) => updatePersonalInfo({ ...personalInfo, phone: e.target.value })}
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
               className={`pl-10 border-secondary focus:border-accent ${errors.phone ? 'border-red-300' : ''}`}
               placeholder="+1 (555) 000-0000"
               aria-invalid={errors.phone ? "true" : "false"}
@@ -154,58 +184,25 @@ export const PersonalInfoForm = ({ personalInfo, updatePersonalInfo }: PersonalI
         </div>
 
         <div className="form-group">
-          <label htmlFor="address" className="text-sm font-medium text-primary">Address</label>
-          <Input
-            id="address"
-            value={personalInfo.address}
-            onChange={(e) => updatePersonalInfo({ ...personalInfo, address: e.target.value })}
-            className="border-secondary focus:border-accent"
-            placeholder="Your address"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="linkedin" className="text-sm font-medium text-primary">LinkedIn</label>
-          <Input
-            id="linkedin"
-            value={personalInfo.linkedin}
-            onChange={(e) => updatePersonalInfo({ ...personalInfo, linkedin: e.target.value })}
-            className="border-secondary focus:border-accent"
-            placeholder="linkedin.com/in/yourprofile"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="github" className="text-sm font-medium text-primary">GitHub</label>
-          <Input
-            id="github"
-            value={personalInfo.github}
-            onChange={(e) => updatePersonalInfo({ ...personalInfo, github: e.target.value })}
-            className="border-secondary focus:border-accent"
-            placeholder="github.com/yourusername"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="portfolio" className="text-sm font-medium text-primary">Portfolio Website</label>
+          <label htmlFor="website" className="text-sm font-medium text-primary">Website (Optional)</label>
           <div className="relative">
             <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              id="portfolio"
-              value={personalInfo.portfolio}
-              onChange={(e) => updatePersonalInfo({ ...personalInfo, portfolio: e.target.value })}
+              id="website"
+              value={formData.website}
+              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
               className="pl-10 border-secondary focus:border-accent"
-              placeholder="www.yourportfolio.com"
+              placeholder="www.johndoe.com"
             />
           </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="objective" className="text-sm font-medium text-primary">Professional Objective</label>
+          <label htmlFor="summary" className="text-sm font-medium text-primary">Professional Summary</label>
           <Textarea
-            id="objective"
-            value={personalInfo.objective}
-            onChange={(e) => updatePersonalInfo({ ...personalInfo, objective: e.target.value })}
+            id="summary"
+            value={formData.summary}
+            onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
             placeholder="Write a brief summary of your professional background and career objectives..."
             className="border-secondary focus:border-accent min-h-[120px]"
             rows={4}

@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 const worldCities = [
@@ -49,7 +48,8 @@ export const showRealtimeNotification = () => {
   
   toast({
     title: "New Resume Created! 🌎",
-    description: `${notification.name} from ${notification.place} just created their resume`
+    description: `${notification.name} from ${notification.place} just created their resume`,
+    duration: 3000
   });
 };
 

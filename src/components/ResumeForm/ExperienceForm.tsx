@@ -4,36 +4,32 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Briefcase, Plus, Trash2 } from "lucide-react";
+import { debounce } from "@/utils/performanceUtils";
 
 interface ExperienceItem {
-  title: string;
   company: string;
-  location: string;
+  position: string;
   startDate: string;
   endDate: string;
   description: string;
 }
 
 interface ExperienceFormProps {
-  experience: ExperienceItem[];
-  updateExperience: (experience: ExperienceItem[]) => void;
-  addExperience: () => void;
-  removeExperience: (index: number) => void;
-  updateExperienceItem: (index: number, updatedItem: ExperienceItem) => void;
-  experienceCount: number;
+  isActive: boolean;
+  onComplete: (data: ExperienceItem[]) => void;
 }
 
 // Create memoized individual experience item component for better performance
 const ExperienceItemComponent = memo(({ 
   experience, 
   index, 
-  updateExperienceItem, 
+  updateExperience, 
   removeExperience,
   isFirst
 }: { 
   experience: ExperienceItem; 
   index: number; 
-  updateExperienceItem: (index: number, updatedItem: ExperienceItem) => void;
+  updateExperience: (index: number, field: keyof ExperienceItem, value: string) => void;
   removeExperience: (index: number) => void;
   isFirst: boolean;
 }) => {
@@ -41,8 +37,8 @@ const ExperienceItemComponent = memo(({
   const handleInputChange = useCallback((field: keyof ExperienceItem) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    updateExperienceItem(index, { ...experience, [field]: e.target.value });
-  }, [index, updateExperienceItem, experience]);
+    updateExperience(index, field, e.target.value);
+  }, [index, updateExperience]);
 
   return (
     <div key={index} className="mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg optimize-paint">
@@ -63,17 +59,6 @@ const ExperienceItemComponent = memo(({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <div className="form-group">
-          <label className="text-sm font-medium text-gray-700 block mb-1">Job Title</label>
-          <Input
-            value={experience.title}
-            onChange={handleInputChange('title')}
-            placeholder="Job title"
-            required
-            className="w-full"
-          />
-        </div>
-
-        <div className="form-group">
           <label className="text-sm font-medium text-gray-700 block mb-1">Company</label>
           <Input
             value={experience.company}
@@ -85,11 +70,11 @@ const ExperienceItemComponent = memo(({
         </div>
 
         <div className="form-group">
-          <label className="text-sm font-medium text-gray-700 block mb-1">Location</label>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Position</label>
           <Input
-            value={experience.location}
-            onChange={handleInputChange('location')}
-            placeholder="City, State"
+            value={experience.position}
+            onChange={handleInputChange('position')}
+            placeholder="Job title"
             required
             className="w-full"
           />
@@ -133,11 +118,49 @@ const ExperienceItemComponent = memo(({
 
 ExperienceItemComponent.displayName = 'ExperienceItemComponent';
 
-export const ExperienceForm = memo(({ experience, updateExperience, addExperience, removeExperience, updateExperienceItem, experienceCount }: ExperienceFormProps) => {
+export const ExperienceForm = memo(({ isActive, onComplete }: ExperienceFormProps) => {
+  const [experiences, setExperiences] = useState<ExperienceItem[]>([{
+    company: "",
+    position: "",
+    startDate: "",
+    endDate: "",
+    description: ""
+  }]);
+
+  const handleAddExperience = useCallback(() => {
+    setExperiences(prev => [...prev, {
+      company: "",
+      position: "",
+      startDate: "",
+      endDate: "",
+      description: ""
+    }]);
+  }, []);
+
+  const handleRemoveExperience = useCallback((index: number) => {
+    setExperiences(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const updateExperience = useCallback((index: number, field: keyof ExperienceItem, value: string) => {
+    setExperiences(prev => {
+      const newExperiences = [...prev];
+      newExperiences[index] = {
+        ...newExperiences[index],
+        [field]: value
+      };
+      return newExperiences;
+    });
+  }, []);
+
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission handled by parent
-  }, []);
+    onComplete(experiences);
+  }, [experiences, onComplete]);
+
+  // Skip rendering if not active for performance
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="content-visibility-auto">
@@ -146,13 +169,13 @@ export const ExperienceForm = memo(({ experience, updateExperience, addExperienc
         Work Experience
       </h2>
 
-      {experience.map((exp, index) => (
+      {experiences.map((exp, index) => (
         <ExperienceItemComponent
           key={index}
           experience={exp}
           index={index}
-          updateExperienceItem={updateExperienceItem}
-          removeExperience={removeExperience}
+          updateExperience={updateExperience}
+          removeExperience={handleRemoveExperience}
           isFirst={index === 0}
         />
       ))}
@@ -161,11 +184,14 @@ export const ExperienceForm = memo(({ experience, updateExperience, addExperienc
         <Button
           type="button"
           variant="outline"
-          onClick={addExperience}
+          onClick={handleAddExperience}
           className="flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Add Experience
+        </Button>
+        <Button type="submit" className="w-full sm:flex-1">
+          Save Experience
         </Button>
       </div>
     </form>

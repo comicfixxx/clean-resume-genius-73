@@ -1,43 +1,55 @@
 
-import { toast as sonnerToast } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 
-export interface Toast {
-  title?: string;
-  description?: string;
+// Define our own Toast type since sonner's type is imported as ToastT
+export type Toast = Omit<ToastT, 'id'> & {
   variant?: "default" | "destructive" | "success";
   id?: string | number;
-}
+};
 
+// Define the unified return type for useToast
 export interface UseToastReturnType {
   toast: (props: Toast) => string | number;
   toasts: Toast[];
 }
 
 export function toast(props: Toast) {
-  const { variant = "default", title, description, ...rest } = props;
+  const { variant, id = crypto.randomUUID(), ...rest } = props;
   
-  // Map our variants to sonner's supported options
+  // Add variant-specific styling
+  let className = "";
   if (variant === "destructive") {
-    return sonnerToast.error(title || "Error", {
-      description,
-      ...rest
-    });
+    className = "bg-destructive text-destructive-foreground";
   } else if (variant === "success") {
-    return sonnerToast.success(title || "Success", {
-      description,
-      ...rest
-    });
-  } else {
-    return sonnerToast(title || "Notification", {
-      description,
-      ...rest
-    });
+    className = "bg-green-500 text-white";
   }
+  
+  // Map our variants to sonner's supported types
+  // We'll convert our variant to a format sonner understands
+  let sonnerType: any;
+  if (variant === "destructive") {
+    sonnerType = "error";
+  } else if (variant === "success") {
+    sonnerType = "success";
+  } else {
+    sonnerType = "default";
+  }
+  
+  return sonnerToast(rest.title as string, {
+    ...rest,
+    id,
+    className,
+    // Use our mapped sonnerType
+    ...(sonnerType && { type: sonnerType })
+  });
 }
+
+// Create a wrapper around sonner's toast functionality
+const toasts: Toast[] = []; // This is just a placeholder as sonner handles the actual toast state
 
 export const useToast = (): UseToastReturnType => {
   return {
     toast,
-    toasts: [], // Sonner handles toast state internally
+    toasts,
   };
 };

@@ -6,12 +6,13 @@ import { Code, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SkillsFormProps {
-  skills: string[];
-  updateSkills: (skills: string[]) => void;
+  isActive: boolean;
+  onComplete: (data: any) => void;
 }
 
-export const SkillsForm = memo(({ skills, updateSkills }: SkillsFormProps) => {
+export const SkillsForm = memo(({ isActive, onComplete }: SkillsFormProps) => {
   const { toast } = useToast();
+  const [skills, setSkills] = useState<string[]>([]);
   const [currentSkill, setCurrentSkill] = useState("");
 
   const handleAddSkill = useCallback((e: React.FormEvent) => {
@@ -28,7 +29,7 @@ export const SkillsForm = memo(({ skills, updateSkills }: SkillsFormProps) => {
     }
     
     if (trimmedSkill && !skills.includes(trimmedSkill)) {
-      updateSkills([...skills, trimmedSkill]);
+      setSkills(prev => [...prev, trimmedSkill]);
       setCurrentSkill("");
     } else if (skills.includes(trimmedSkill)) {
       toast({
@@ -37,21 +38,26 @@ export const SkillsForm = memo(({ skills, updateSkills }: SkillsFormProps) => {
         description: "This skill is already in your list."
       });
     }
-  }, [currentSkill, skills, toast, updateSkills]);
+  }, [currentSkill, skills, toast]);
 
   const handleRemoveSkill = useCallback((skillToRemove: string) => {
-    updateSkills(skills.filter(skill => skill !== skillToRemove));
-  }, [skills, updateSkills]);
+    setSkills(prev => prev.filter(skill => skill !== skillToRemove));
+  }, []);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    onComplete(skills);
     
     // Show success toast
     toast({
       title: "Skills saved",
       description: `${skills.length} skills saved successfully.`,
+      variant: "success"
     });
-  }, [skills, toast]);
+  }, [skills, onComplete, toast]);
+
+  // Skip rendering if not active for performance
+  if (!isActive) return null;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 content-visibility-auto">
