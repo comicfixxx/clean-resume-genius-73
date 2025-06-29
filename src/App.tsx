@@ -1,4 +1,3 @@
-
 import React, { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,7 +20,6 @@ const Terms = lazy(() => import("@/pages/Terms"));
 const Cookies = lazy(() => import("@/pages/Cookies"));
 const Error = lazy(() => import("@/pages/Error"));
 const Splash = lazy(() => import("@/pages/Splash"));
-const Pricing = lazy(() => import("@/pages/Pricing"));
 const CareerTips = lazy(() => import("@/pages/CareerTips"));
 
 // Loading component for Suspense
@@ -115,7 +113,6 @@ const App: React.FC = () => {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/cookies" element={<Cookies />} />
                   <Route path="/splash" element={<Splash />} />
-                  <Route path="/pricing" element={<Pricing />} />
                   <Route path="*" element={<Error />} />
                 </Routes>
               </Suspense>

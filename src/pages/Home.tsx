@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { PricingPlans } from "@/components/Pricing/PricingPlans";
 import { Features } from "@/components/Features/Features";
 import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { AffiliateSection } from "@/components/AffiliateProgram/AffiliateSection";
@@ -23,9 +22,6 @@ const Home = () => {
 
       {/* Features Section */}
       <Features />
-
-      {/* Pricing Section */}
-      <PricingPlans />
 
       {/* Affiliate Program Section */}
       <AffiliateSection />

@@ -40,9 +40,9 @@ export const HeroSection = () => {
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/pricing">
+            <Link to="/builder">
               <Button variant="outline" size="lg" className="px-8 py-6 text-base rounded-xl border-2 hover:bg-primary/5 w-full sm:w-auto">
-                View Pricing
+                Get Started
               </Button>
             </Link>
           </div>
