@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "@/components/ResumeForm/PersonalInfoForm";
@@ -22,7 +23,13 @@ const Index = () => {
   const { isMobile, isTablet } = useDeviceDetect();
   const [activeSection, setActiveSection] = useState("personal");
   const [resumeData, setResumeData] = useState({
-    personal: {},
+    personal: {
+      fullName: "",
+      email: "",
+      phone: "",
+      website: "",
+      summary: ""
+    },
     experience: [],
     education: [],
     skills: []
@@ -36,6 +43,7 @@ const Index = () => {
   ];
 
   const handleSectionComplete = (section: string, data: any) => {
+    console.log(`Section ${section} completed with data:`, data);
     setResumeData(prev => ({
       ...prev,
       [section]: section === "education" ? data.education : data
@@ -46,12 +54,32 @@ const Index = () => {
     });
   };
 
+  // Load saved data from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('resume_data');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setResumeData(parsedData);
+        console.log('Loaded saved resume data:', parsedData);
+      }
+    } catch (error) {
+      console.error('Error loading saved resume data:', error);
+    }
+  }, []);
+
+  // Save data to localStorage whenever resumeData changes
+  useEffect(() => {
+    if (Object.keys(resumeData.personal).length > 0 || resumeData.experience.length > 0 || resumeData.education.length > 0 || resumeData.skills.length > 0) {
+      localStorage.setItem('resume_data', JSON.stringify(resumeData));
+      console.log('Resume data saved to localStorage:', resumeData);
+    }
+  }, [resumeData]);
+
   // Check donation status on load
   useEffect(() => {
     const donated = checkDonationStatus();
-    if (donated) {
-      console.log("User has already donated");
-    }
+    console.log('Donation status on load:', donated);
   }, []);
 
   const ResumePreview = () => (
@@ -137,7 +165,10 @@ const Index = () => {
                     <Button
                       key={section.id}
                       variant={activeSection === section.id ? "default" : "outline"}
-                      onClick={() => setActiveSection(section.id)}
+                      onClick={() => {
+                        console.log(`Switching to section: ${section.id}`);
+                        setActiveSection(section.id);
+                      }}
                       className="flex items-center gap-1 sm:gap-2"
                       size={isMobile ? "sm" : "default"}
                     >
@@ -152,25 +183,38 @@ const Index = () => {
                 {activeSection === "personal" && (
                   <PersonalInfoForm
                     isActive={true}
-                    onComplete={(data) => handleSectionComplete("personal", data)}
+                    initialData={resumeData.personal}
+                    onComplete={(data) => {
+                      console.log('Personal info completed:', data);
+                      handleSectionComplete("personal", data);
+                    }}
                   />
                 )}
                 {activeSection === "experience" && (
                   <ExperienceForm
                     isActive={true}
-                    onComplete={(data) => handleSectionComplete("experience", data)}
+                    onComplete={(data) => {
+                      console.log('Experience completed:', data);
+                      handleSectionComplete("experience", data);
+                    }}
                   />
                 )}
                 {activeSection === "education" && (
                   <EducationForm
                     isActive={true}
-                    onComplete={(data) => handleSectionComplete("education", data)}
+                    onComplete={(data) => {
+                      console.log('Education completed:', data);
+                      handleSectionComplete("education", data);
+                    }}
                   />
                 )}
                 {activeSection === "skills" && (
                   <SkillsForm
                     isActive={true}
-                    onComplete={(data) => handleSectionComplete("skills", data)}
+                    onComplete={(data) => {
+                      console.log('Skills completed:', data);
+                      handleSectionComplete("skills", data);
+                    }}
                   />
                 )}
               </div>
