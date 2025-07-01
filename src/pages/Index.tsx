@@ -15,7 +15,6 @@ import PageSEO from "@/components/SEO/PageSEO";
 import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/LinkedInOptimizationDialog";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
 import { useDeviceDetect } from "@/utils/responsiveUtils";
-import { supabase } from "@/integrations/supabase/client";
 import { checkDonationStatus } from "@/utils/donationUtils";
 
 const Index = () => {
