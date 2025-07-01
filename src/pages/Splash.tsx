@@ -1,9 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Laptop, Shield, Clock } from "lucide-react";
 import FAQSection from "@/components/FAQ/FAQSection";
 import { SocialLinks } from "@/components/SocialLinks/SocialLinks";
-import { PricingPlans } from "@/components/Pricing/PricingPlans";
 import { FindBuilder } from "@/components/ResumeBuilder/FindBuilder";
 import { TutorialSection } from "@/components/ResumeBuilder/TutorialSection";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
@@ -106,9 +106,6 @@ const Splash = () => {
               <li>Resume sections optimized for ATS scanning and human reviewers</li>
             </ul>
           </div>
-
-          {/* Add Pricing Plans */}
-          <PricingPlans />
 
           {/* Tutorial Section */}
           <TutorialSection />
