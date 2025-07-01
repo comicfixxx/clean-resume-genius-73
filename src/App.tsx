@@ -1,8 +1,9 @@
+
 import React, { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -38,7 +39,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      gcTime: 5 * 60 * 1000, // Using gcTime instead of deprecated cacheTime
+      gcTime: 5 * 60 * 1000,
     },
   },
 });
@@ -54,12 +55,40 @@ const preconnectDomains = [
   'https://fonts.googleapis.com',
   'https://fonts.gstatic.com',
   'https://api.producthunt.com',
-  'https://cdn.jsdelivr.net' // Added for QR code library
+  'https://cdn.jsdelivr.net'
 ];
 
+const AppContent: React.FC = () => {
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Toaster />
+      <Navbar />
+      <main 
+        id="main-content" 
+        className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
+      >
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/builder" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/ats-checker" element={<ATSChecker />} />
+            <Route path="/interview-guide" element={<InterviewGuide />} />
+            <Route path="/career-tips" element={<CareerTips />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/splash" element={<Splash />} />
+            <Route path="*" element={<Error />} />
+          </Routes>
+        </Suspense>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 const App: React.FC = () => {
-  const location = useLocation();
-  
   // Set up performance optimizations when the app loads
   useEffect(() => {
     // Preload critical resources
@@ -77,7 +106,6 @@ const App: React.FC = () => {
     // Add event listener for web vitals measurement
     if ('performance' in window && 'measure' in window.performance) {
       window.addEventListener('load', () => {
-        // Use setTimeout to ensure this runs after initial rendering
         setTimeout(() => {
           const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
           if (navigationTiming) {
@@ -94,31 +122,9 @@ const App: React.FC = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <div className="min-h-screen flex flex-col bg-background">
-            <Toaster />
-            <Navbar />
-            <main 
-              id="main-content" 
-              className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
-            >
-              <Suspense fallback={<Loading />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/builder" element={<Index />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/ats-checker" element={<ATSChecker />} />
-                  <Route path="/interview-guide" element={<InterviewGuide />} />
-                  <Route path="/career-tips" element={<CareerTips />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/splash" element={<Splash />} />
-                  <Route path="*" element={<Error />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
+          <Router>
+            <AppContent />
+          </Router>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

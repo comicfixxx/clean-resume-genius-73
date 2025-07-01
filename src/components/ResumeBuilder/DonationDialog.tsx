@@ -16,7 +16,7 @@ interface DonationDialogProps {
 }
 
 const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: DonationDialogProps) => {
-  const [donationAmount, setDonationAmount] = useState(399);
+  const [donationAmount, setDonationAmount] = useState(599);
   const [showQR, setShowQR] = useState(false);
   const [hasDonated, setHasDonated] = useState(checkDonationStatus());
   const [format, setFormat] = useState(selectedFormat || 'pdf');
@@ -26,7 +26,7 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
     if (open) {
       setHasDonated(checkDonationStatus());
       setFormat(selectedFormat || 'pdf');
-      setShowQR(false); // Reset QR display when dialog opens
+      setShowQR(false);
     }
   }, [open, selectedFormat]);
 
@@ -97,11 +97,11 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
                 id="donation-amount"
                 type="number"
                 value={donationAmount}
-                onChange={(e) => setDonationAmount(parseInt(e.target.value) || 399)}
+                onChange={(e) => setDonationAmount(parseInt(e.target.value) || 599)}
                 min={1}
               />
               <p className="text-sm text-muted-foreground">
-                Suggested donation: ₹399
+                Suggested donation: ₹599
               </p>
             </div>
             

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { initializePayment, checkPreviousPayment } from "@/utils/paymentUtils";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Loader2, CheckCircle } from "lucide-react";
 
@@ -37,14 +37,9 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
   // Reset state when dialog opens
   useEffect(() => {
     if (open) {
-      // Reset processing state when dialog opens
       setIsProcessing(false);
-      
-      // Check for previous purchases
       const previousPurchase = checkPreviousPayment();
       setHasPreviousPurchase(previousPurchase);
-      
-      // Retrieve previously used format if any
       const savedFormat = localStorage.getItem('preferred_format');
       if (savedFormat && ['pdf', 'docx', 'doc'].includes(savedFormat)) {
         setSelectedFormat(savedFormat);
@@ -52,7 +47,6 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
     }
   }, [open]);
 
-  // Save selected format preference
   useEffect(() => {
     if (selectedFormat) {
       localStorage.setItem('preferred_format', selectedFormat);
@@ -60,7 +54,6 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
   }, [selectedFormat]);
 
   const validateReferralCode = (code: string) => {
-    // Simple validation for referral codes
     const isValid = code.length === 5 && code.endsWith("ak90");
     setIsReferralValid(isValid);
     return isValid;
@@ -68,7 +61,7 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
 
   const calculateDiscountedAmount = (originalAmount: number, code: string) => {
     if (validateReferralCode(code)) {
-      return Math.floor(originalAmount * 0.9); // 10% discount
+      return Math.floor(originalAmount * 0.9);
     }
     return originalAmount;
   };
@@ -82,7 +75,6 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
       return;
     }
     
-    // If user already has a valid purchase, skip payment
     if (hasPreviousPurchase) {
       console.log('Using previous purchase');
       onSuccess(selectedFormat);
@@ -99,7 +91,7 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
     setIsProcessing(true);
     
     try {
-      const baseAmount = isAtsCheck ? 59 : 399;
+      const baseAmount = isAtsCheck ? 59 : 599;
       let finalAmount = baseAmount;
 
       if (referralCode) {
@@ -123,7 +115,6 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
         }
       }
 
-      // Store user's email for later sending confirmation
       const formElements = document.querySelectorAll('input[type="email"]');
       formElements.forEach(element => {
         const input = element as HTMLInputElement;
@@ -132,16 +123,13 @@ export const PaymentDialog = ({ open, onOpenChange, onSuccess, isAtsCheck = fals
         }
       });
 
-      // Save user name if available
       const nameInput = document.querySelector('input[id="fullName"]') as HTMLInputElement;
       if (nameInput && nameInput.value) {
         localStorage.setItem('user_name', nameInput.value);
       }
 
-      // Call initializePayment with success callback that closes dialog and triggers onSuccess
       await initializePayment(finalAmount, () => {
         console.log('Payment successful, initiating download/check');
-        // Trigger the success callback with the selected format
         onSuccess(selectedFormat);
         setIsValidatingCode(false);
         setIsProcessing(false);
