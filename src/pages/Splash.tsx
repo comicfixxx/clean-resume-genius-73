@@ -11,6 +11,7 @@ const Splash = () => {
       <PageSEO 
         title="Professional Resume Builder - Create ATS-Optimized Resumes"
         description="Build professional, ATS-friendly resumes that get you hired. Our resume builder ensures 95% compatibility with applicant tracking systems."
+        type="splash"
       />
       
       <div className="container mx-auto px-4 py-16">
