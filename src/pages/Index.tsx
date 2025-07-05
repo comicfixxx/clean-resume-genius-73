@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PageSEO from "@/components/SEO/PageSEO";
 import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/LinkedInOptimizationDialog";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
-import { useDeviceDetect } from "@/utils/responsiveUtils";
+import { useDeviceDetect } from "@/hooks/useDeviceDetect";
 import { checkDonationStatus } from "@/utils/donationUtils";
 
 const Index = () => {
@@ -42,7 +42,6 @@ const Index = () => {
   ];
 
   const handleSectionComplete = (section: string, data: any) => {
-    console.log(`Section ${section} completed with data:`, data);
     setResumeData(prev => ({
       ...prev,
       [section]: section === "education" ? data.education : data
@@ -60,7 +59,6 @@ const Index = () => {
       if (savedData) {
         const parsedData = JSON.parse(savedData);
         setResumeData(parsedData);
-        console.log('Loaded saved resume data:', parsedData);
       }
     } catch (error) {
       console.error('Error loading saved resume data:', error);
@@ -71,14 +69,12 @@ const Index = () => {
   useEffect(() => {
     if (Object.keys(resumeData.personal).length > 0 || resumeData.experience.length > 0 || resumeData.education.length > 0 || resumeData.skills.length > 0) {
       localStorage.setItem('resume_data', JSON.stringify(resumeData));
-      console.log('Resume data saved to localStorage:', resumeData);
     }
   }, [resumeData]);
 
   // Check donation status on load
   useEffect(() => {
     const donated = checkDonationStatus();
-    console.log('Donation status on load:', donated);
   }, []);
 
   const ResumePreview = () => (
@@ -165,7 +161,6 @@ const Index = () => {
                       key={section.id}
                       variant={activeSection === section.id ? "default" : "outline"}
                       onClick={() => {
-                        console.log(`Switching to section: ${section.id}`);
                         setActiveSection(section.id);
                       }}
                       className="flex items-center gap-1 sm:gap-2"
@@ -184,7 +179,6 @@ const Index = () => {
                     isActive={true}
                     initialData={resumeData.personal}
                     onComplete={(data) => {
-                      console.log('Personal info completed:', data);
                       handleSectionComplete("personal", data);
                     }}
                   />
@@ -193,7 +187,6 @@ const Index = () => {
                   <ExperienceForm
                     isActive={true}
                     onComplete={(data) => {
-                      console.log('Experience completed:', data);
                       handleSectionComplete("experience", data);
                     }}
                   />
@@ -202,7 +195,6 @@ const Index = () => {
                   <EducationForm
                     isActive={true}
                     onComplete={(data) => {
-                      console.log('Education completed:', data);
                       handleSectionComplete("education", data);
                     }}
                   />
@@ -211,7 +203,6 @@ const Index = () => {
                   <SkillsForm
                     isActive={true}
                     onComplete={(data) => {
-                      console.log('Skills completed:', data);
                       handleSectionComplete("skills", data);
                     }}
                   />
