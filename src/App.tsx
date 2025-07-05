@@ -3,11 +3,10 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { setupLazyLoadImages, preloadCriticalResources } from '@/utils/performanceUtils';
 import { addPreconnectLinks, registerServiceWorker } from '@/utils/responsiveUtils';
 
@@ -22,6 +21,7 @@ const Terms = lazy(() => import("@/pages/Terms"));
 const Cookies = lazy(() => import("@/pages/Cookies"));
 const Error = lazy(() => import("@/pages/Error"));
 const Splash = lazy(() => import("@/pages/Splash"));
+const Pricing = lazy(() => import("@/pages/Pricing"));
 const CareerTips = lazy(() => import("@/pages/CareerTips"));
 
 // Loading component for Suspense
@@ -40,7 +40,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      gcTime: 5 * 60 * 1000,
+      gcTime: 5 * 60 * 1000, // Using gcTime instead of deprecated cacheTime
     },
   },
 });
@@ -56,42 +56,12 @@ const preconnectDomains = [
   'https://fonts.googleapis.com',
   'https://fonts.gstatic.com',
   'https://api.producthunt.com',
-  'https://cdn.jsdelivr.net'
+  'https://cdn.jsdelivr.net' // Added for QR code library
 ];
 
-const AppContent: React.FC = () => {
-  return (
-    <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-background">
-        <Toaster />
-        <Navbar />
-        <main 
-          id="main-content" 
-          className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
-        >
-          <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/builder" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/ats-checker" element={<ATSChecker />} />
-              <Route path="/interview-guide" element={<InterviewGuide />} />
-              <Route path="/career-tips" element={<CareerTips />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/splash" element={<Splash />} />
-              <Route path="*" element={<Error />} />
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
-    </ErrorBoundary>
-  );
-};
-
 const App: React.FC = () => {
+  const location = useLocation();
+  
   // Set up performance optimizations when the app loads
   useEffect(() => {
     // Preload critical resources
@@ -109,9 +79,10 @@ const App: React.FC = () => {
     // Add event listener for web vitals measurement
     if ('performance' in window && 'measure' in window.performance) {
       window.addEventListener('load', () => {
+        // Use setTimeout to ensure this runs after initial rendering
         setTimeout(() => {
           const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-          if (navigationTiming && process.env.NODE_ENV === 'development') {
+          if (navigationTiming) {
             console.log(`Time to first byte: ${navigationTiming.responseStart}ms`);
             console.log(`DOM Content Loaded: ${navigationTiming.domContentLoadedEventEnd}ms`);
             console.log(`Load event: ${navigationTiming.loadEventEnd}ms`);
@@ -125,9 +96,32 @@ const App: React.FC = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Router>
-            <AppContent />
-          </Router>
+          <div className="min-h-screen flex flex-col bg-background">
+            <Toaster />
+            <Navbar />
+            <main 
+              id="main-content" 
+              className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
+            >
+              <Suspense fallback={<Loading />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/builder" element={<Index />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/ats-checker" element={<ATSChecker />} />
+                  <Route path="/interview-guide" element={<InterviewGuide />} />
+                  <Route path="/career-tips" element={<CareerTips />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/cookies" element={<Cookies />} />
+                  <Route path="/splash" element={<Splash />} />
+                  <Route path="/pricing" element={<Pricing />} />
+                  <Route path="*" element={<Error />} />
+                </Routes>
+              </Suspense>
+            </main>
+            <Footer />
+          </div>
         </TooltipProvider>
       </QueryClientProvider>
     </HelmetProvider>

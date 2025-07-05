@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "@/components/ResumeForm/PersonalInfoForm";
@@ -14,7 +13,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import PageSEO from "@/components/SEO/PageSEO";
 import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/LinkedInOptimizationDialog";
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
-import { useDeviceDetect } from "@/hooks/useDeviceDetect";
+import { useDeviceDetect } from "@/utils/responsiveUtils";
+import { supabase } from "@/integrations/supabase/client";
 import { checkDonationStatus } from "@/utils/donationUtils";
 
 const Index = () => {
@@ -22,13 +22,7 @@ const Index = () => {
   const { isMobile, isTablet } = useDeviceDetect();
   const [activeSection, setActiveSection] = useState("personal");
   const [resumeData, setResumeData] = useState({
-    personal: {
-      fullName: "",
-      email: "",
-      phone: "",
-      website: "",
-      summary: ""
-    },
+    personal: {},
     experience: [],
     education: [],
     skills: []
@@ -52,29 +46,12 @@ const Index = () => {
     });
   };
 
-  // Load saved data from localStorage on component mount
-  useEffect(() => {
-    try {
-      const savedData = localStorage.getItem('resume_data');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        setResumeData(parsedData);
-      }
-    } catch (error) {
-      console.error('Error loading saved resume data:', error);
-    }
-  }, []);
-
-  // Save data to localStorage whenever resumeData changes
-  useEffect(() => {
-    if (Object.keys(resumeData.personal).length > 0 || resumeData.experience.length > 0 || resumeData.education.length > 0 || resumeData.skills.length > 0) {
-      localStorage.setItem('resume_data', JSON.stringify(resumeData));
-    }
-  }, [resumeData]);
-
   // Check donation status on load
   useEffect(() => {
     const donated = checkDonationStatus();
+    if (donated) {
+      console.log("User has already donated");
+    }
   }, []);
 
   const ResumePreview = () => (
@@ -160,9 +137,7 @@ const Index = () => {
                     <Button
                       key={section.id}
                       variant={activeSection === section.id ? "default" : "outline"}
-                      onClick={() => {
-                        setActiveSection(section.id);
-                      }}
+                      onClick={() => setActiveSection(section.id)}
                       className="flex items-center gap-1 sm:gap-2"
                       size={isMobile ? "sm" : "default"}
                     >
@@ -177,34 +152,25 @@ const Index = () => {
                 {activeSection === "personal" && (
                   <PersonalInfoForm
                     isActive={true}
-                    initialData={resumeData.personal}
-                    onComplete={(data) => {
-                      handleSectionComplete("personal", data);
-                    }}
+                    onComplete={(data) => handleSectionComplete("personal", data)}
                   />
                 )}
                 {activeSection === "experience" && (
                   <ExperienceForm
                     isActive={true}
-                    onComplete={(data) => {
-                      handleSectionComplete("experience", data);
-                    }}
+                    onComplete={(data) => handleSectionComplete("experience", data)}
                   />
                 )}
                 {activeSection === "education" && (
                   <EducationForm
                     isActive={true}
-                    onComplete={(data) => {
-                      handleSectionComplete("education", data);
-                    }}
+                    onComplete={(data) => handleSectionComplete("education", data)}
                   />
                 )}
                 {activeSection === "skills" && (
                   <SkillsForm
                     isActive={true}
-                    onComplete={(data) => {
-                      handleSectionComplete("skills", data);
-                    }}
+                    onComplete={(data) => handleSectionComplete("skills", data)}
                   />
                 )}
               </div>

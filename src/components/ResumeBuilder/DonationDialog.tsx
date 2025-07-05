@@ -16,7 +16,7 @@ interface DonationDialogProps {
 }
 
 const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: DonationDialogProps) => {
-  const [donationAmount, setDonationAmount] = useState(599);
+  const [donationAmount, setDonationAmount] = useState(399);
   const [showQR, setShowQR] = useState(false);
   const [hasDonated, setHasDonated] = useState(checkDonationStatus());
   const [format, setFormat] = useState(selectedFormat || 'pdf');
@@ -26,13 +26,11 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
     if (open) {
       setHasDonated(checkDonationStatus());
       setFormat(selectedFormat || 'pdf');
-      setShowQR(false);
     }
   }, [open, selectedFormat]);
 
   // Function to handle donation completion
   const handleComplete = () => {
-    console.log('Marking donation as complete for format:', format);
     markDonationComplete();
     setHasDonated(true);
     onSuccess(format);
@@ -41,15 +39,7 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
 
   // Function to show donation QR
   const handleDonate = () => {
-    console.log('Showing QR for donation, selected format:', format);
     setShowQR(true);
-  };
-
-  // Handle direct download if already donated
-  const handleDirectDownload = () => {
-    console.log('Direct download for format:', format);
-    onSuccess(format);
-    onOpenChange(false);
   };
 
   return (
@@ -97,29 +87,23 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
                 id="donation-amount"
                 type="number"
                 value={donationAmount}
-                onChange={(e) => setDonationAmount(parseInt(e.target.value) || 599)}
+                onChange={(e) => setDonationAmount(parseInt(e.target.value) || 399)}
                 min={1}
               />
               <p className="text-sm text-muted-foreground">
-                Suggested donation: ₹599
+                Suggested donation: ₹399
               </p>
             </div>
             
             <Button onClick={handleDonate} className="w-full">
               <Wallet className="mr-2 h-4 w-4" />
-              Proceed to Donate ₹{donationAmount}
+              Proceed to Donate
             </Button>
           </div>
         )}
 
         {!hasDonated && showQR && (
           <div className="py-4 space-y-4">
-            <div className="text-center space-y-2">
-              <p className="text-sm font-medium">
-                Donate ₹{donationAmount} to download your {format.toUpperCase()} resume
-              </p>
-            </div>
-            
             <div className="flex justify-center">
               <img 
                 src="/lovable-uploads/c73b380c-4839-40a6-afb7-b3046b37512d.png" 
@@ -132,7 +116,7 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
               <p className="text-sm">
                 <span className="font-semibold">UPI ID:</span> adnanmuhammad4393@okicici
               </p>
-              <p className="text-sm text-muted-foreground">Scan with any UPI app to donate</p>
+              <p className="text-sm">Scan with any UPI app to donate</p>
             </div>
             
             <div className="pt-2">
@@ -172,9 +156,9 @@ const DonationDialog = ({ open, onOpenChange, onSuccess, selectedFormat }: Donat
               </RadioGroup>
             </div>
             
-            <Button onClick={handleDirectDownload} className="w-full">
+            <Button onClick={() => onSuccess(format)} className="w-full">
               <Download className="mr-2 h-4 w-4" />
-              Download {format.toUpperCase()} Resume
+              Download Resume
             </Button>
           </div>
         )}

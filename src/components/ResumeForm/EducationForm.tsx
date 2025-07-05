@@ -4,17 +4,9 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, Plus, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-interface EducationItem {
-  school: string;
-  degree: string;
-  field: string;
-  startDate: string;
-  endDate: string;
-}
-
 interface EducationFormProps {
   isActive: boolean;
-  onComplete: (data: { education: EducationItem[]; isSelfLearner: boolean }) => void;
+  onComplete: (data: any) => void;
   onTypeChange?: (isSelfLearner: boolean) => void;
 }
 

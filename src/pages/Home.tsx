@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { PricingPlans } from "@/components/Pricing/PricingPlans";
 import { Features } from "@/components/Features/Features";
 import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { AffiliateSection } from "@/components/AffiliateProgram/AffiliateSection";
@@ -10,10 +11,10 @@ import SeoKeywords from "@/components/SEO/SeoKeywords";
 import SeoStructuredData from "@/components/SEO/SeoStructuredData";
 
 const Home = () => {
-  const { toast } = useToast();
-  
-  return (
-    <div className="min-h-screen">
+  const {
+    toast
+  } = useToast();
+  return <div className="min-h-screen">
       <SeoKeywords page="home" />
       <SeoStructuredData type="home" />
       
@@ -22,6 +23,9 @@ const Home = () => {
 
       {/* Features Section */}
       <Features />
+
+      {/* Pricing Section */}
+      <PricingPlans />
 
       {/* Affiliate Program Section */}
       <AffiliateSection />
@@ -54,14 +58,7 @@ const Home = () => {
           <div className="space-y-4">
             <div className="space-x-4">
               <Link to="/builder">
-                <Button 
-                  size="lg"
-                  onClick={() => {
-                    console.log('Get Started button clicked - navigating to /builder');
-                  }}
-                >
-                  Get Started
-                </Button>
+                <Button size="lg">Get Started</Button>
               </Link>
               <Link to="/ats-checker">
                 <Button variant="outline" size="lg">Check ATS Score</Button>
@@ -83,8 +80,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default Home;

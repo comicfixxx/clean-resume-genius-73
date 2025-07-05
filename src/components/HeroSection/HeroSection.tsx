@@ -29,20 +29,14 @@ export const HeroSection = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 animate-fade-in delay-200">
             <Link to="/builder">
-              <Button 
-                size="lg" 
-                className="px-8 py-6 text-base rounded-xl shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto"
-                onClick={() => {
-                  console.log('Hero Create Resume button clicked - navigating to /builder');
-                }}
-              >
+              <Button size="lg" className="px-8 py-6 text-base rounded-xl shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto">
                 Create Resume
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/builder">
+            <Link to="/pricing">
               <Button variant="outline" size="lg" className="px-8 py-6 text-base rounded-xl border-2 hover:bg-primary/5 w-full sm:w-auto">
-                Get Started
+                View Pricing
               </Button>
             </Link>
           </div>
