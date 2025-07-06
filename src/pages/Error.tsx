@@ -38,10 +38,10 @@ const Error = () => {
         title: `Error ${state.errorCode || ''}`,
         description: state.errorMessage
       });
-    } else if (location.pathname.includes('payment')) {
+    } else if (location.pathname.includes('error')) {
       setErrorInfo({
-        title: "Payment Error",
-        description: "There was an issue processing your payment. Please try again or contact support."
+        title: "Application Error",
+        description: "There was an unexpected error. Please try again or contact support."
       });
     } else if (location.search.includes('error=')) {
       // Handle query param errors

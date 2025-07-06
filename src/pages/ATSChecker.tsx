@@ -121,7 +121,7 @@ const ATSChecker = () => {
             variant: "destructive"
           });
         } else {
-          // Directly analyze resume instead of showing payment dialog
+          // Directly analyze the resume
           analyzeResumeContent();
         }
       }

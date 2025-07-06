@@ -6,8 +6,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from '@/components/ui/button';
 import { exportToFormat } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
-import { checkDonationStatus } from '@/utils/donationUtils';
-import DonationDialog from '@/components/ResumeBuilder/DonationDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,7 +131,7 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
   const atsScore = calculateResumeScore(data);
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
-  const [donationDialogOpen, setDonationDialogOpen] = useState(false);
+  
   const [selectedFormat, setSelectedFormat] = useState("pdf");
   const formatOptions = [
     { value: "pdf", label: "PDF" },
@@ -152,14 +150,6 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
   };
   
   const handleDownload = async () => {
-    const isDonated = checkDonationStatus();
-    
-    if (!isDonated) {
-      setDonationDialogOpen(true);
-      return;
-    }
-    
-    // If donation is already completed, directly download
     try {
       await exportToFormat(selectedFormat);
       toast({
@@ -250,12 +240,9 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
                 {formatOptions.map((format) => (
                   <DropdownMenuItem 
                     key={format.value}
-                    onClick={() => {
+                   onClick={() => {
                       setSelectedFormat(format.value);
-                      // After a short delay, trigger download if already donated
-                      if (checkDonationStatus()) {
-                        setTimeout(() => handleDownload(), 100);
-                      }
+                      setTimeout(() => handleDownload(), 100);
                     }}
                     className={selectedFormat === format.value ? "bg-muted" : ""}
                   >
@@ -272,28 +259,6 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
         <PreviewContent data={data} />
       </div>
 
-      <DonationDialog 
-        open={donationDialogOpen} 
-        onOpenChange={setDonationDialogOpen} 
-        onSuccess={async (format) => {
-          try {
-            await exportToFormat(format || selectedFormat);
-            toast({
-              title: "Success",
-              description: "Thank you for your donation! Your resume is downloading.",
-              variant: "default"
-            });
-          } catch (error) {
-            console.error("Error during export:", error);
-            toast({
-              title: "Export Error",
-              description: "There was an error downloading your resume. Please try again.",
-              variant: "destructive"
-            });
-          }
-        }}
-        selectedFormat={selectedFormat}
-      />
     </div>
   );
 });

@@ -36,10 +36,10 @@ const Terms = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">3. Payments</h2>
+            <h2 className="text-xl font-semibold">3. Free Service</h2>
             <p className="text-gray-600">
-              Our services require payment of applicable fees. All payments are processed securely
-              through our payment provider. Fees are non-refundable unless otherwise stated.
+              Our resume builder is completely free to use. You can create, edit, and download your resume 
+              without any charges or subscription fees.
             </p>
           </section>
 

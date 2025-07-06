@@ -78,8 +78,7 @@ const Splash = () => {
               Build an ATS-optimized resume that helps you stand out. Our intelligent system ensures your resume gets noticed by recruiters.
             </p>
             <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto">
-              Make sure you pay the amount quickly; otherwise, the payment will fail, and you'll have to wait 7 days to get the amount credited back to your account.<br />
-              Please ensure that you have made the payment through your UPI ID or number. Do not scan the QR code
+              Start creating your professional resume now - completely free!
             </p>
             <div className="pt-4">
               <SocialLinks />
@@ -180,22 +179,23 @@ const Splash = () => {
             </div>
           </div>
 
-          {/* Referral Program Section */}
+          {/* Free Access Section */}
           <div className="py-12 bg-white rounded-xl shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-8">
-                  Save with Referral Codes
+                  Free Resume Builder for Everyone
                 </h2>
                 <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg hover:shadow-md transition-shadow max-w-md mx-auto">
-                  <h3 className="text-xl font-semibold mb-4">Get 10% Off Your Purchase</h3>
+                  <h3 className="text-xl font-semibold mb-4">No Hidden Costs</h3>
                   <ul className="text-gray-600 text-left space-y-2 mb-4">
-                    <li>• Use referral codes during checkout</li>
-                    <li>• Save 10% on resume builder</li>
-                    <li>• Save 10% on ATS checker</li>
+                    <li>• Create unlimited resumes for free</li>
+                    <li>• Download in PDF, DOCX, or DOC format</li>
+                    <li>• ATS optimization included</li>
+                    <li>• No subscription or payment required</li>
                   </ul>
                   <p className="text-sm text-gray-500">
-                    Enter your referral code at checkout to claim your discount
+                    Start building your professional resume now - completely free!
                   </p>
                 </div>
               </div>

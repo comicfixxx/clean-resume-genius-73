@@ -15,7 +15,7 @@ import LinkedInOptimizationDialog from "@/components/LinkedInOptimization/Linked
 import ResponsiveContainer from "@/components/Layout/ResponsiveContainer";
 import { useDeviceDetect } from "@/utils/responsiveUtils";
 import { supabase } from "@/integrations/supabase/client";
-import { checkDonationStatus } from "@/utils/donationUtils";
+
 
 const Index = () => {
   const { toast } = useToast();
@@ -46,13 +46,6 @@ const Index = () => {
     });
   };
 
-  // Check donation status on load
-  useEffect(() => {
-    const donated = checkDonationStatus();
-    if (donated) {
-      console.log("User has already donated");
-    }
-  }, []);
 
   const ResumePreview = () => (
     <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
@@ -68,8 +61,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <PageSEO 
-        title="Resume Builder - Create Your 95% ATS-Optimized Resume"
-        description="Use our interactive resume builder to create a professional, ATS-friendly resume guaranteed to achieve 95% compatibility with applicant tracking systems."
+        title="Free Resume Builder - Create Your ATS-Optimized Resume"
+        description="Use our free interactive resume builder to create a professional, ATS-friendly resume. No payment required - download instantly!"
         type="builder"
       />
       
@@ -83,8 +76,8 @@ const Index = () => {
               </Button>
             </Link>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-2">Create Your Professional Resume</h1>
-          <p className="text-sm sm:text-base text-secondary mb-4">Fill in your details below and get a 95% ATS-optimized resume</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary mb-2">Create Your Professional Resume - Free</h1>
+          <p className="text-sm sm:text-base text-secondary mb-4">Fill in your details below and download your professional resume - completely free!</p>
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-wrap justify-center gap-2">
               <Link to="/ats-checker">
@@ -198,8 +191,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Add a donation widget container for the script to use */}
-        <div id="donating-widget-container" className="hidden"></div>
       </ResponsiveContainer>
     </div>
   );

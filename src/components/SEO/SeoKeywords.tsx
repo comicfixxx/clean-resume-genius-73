@@ -37,11 +37,11 @@ const SeoKeywords: React.FC<SeoKeywordsProps> = ({ page = 'home' }) => {
       "answering difficult questions", "interview body language", "remote interview success"
     ],
     pricing: [
-      "resume builder pricing", "best value resume service", "professional resume cost",
-      "affordable resume creator", "resume writing service pricing", "resume template pricing",
-      "online resume builder subscription", "one time payment resume tool", "resume package deals",
-      "career service pricing", "ATS checker cost", "resume optimization pricing",
-      "CV builder plans", "resume writing packages", "job application tools cost"
+      "free resume builder", "no cost resume service", "free professional resume creator",
+      "zero cost resume maker", "free resume templates", "free ATS resume checker",
+      "free online resume builder", "no subscription resume tool", "free CV builder",
+      "complimentary resume service", "free ATS checker", "free resume optimization",
+      "free CV maker", "free resume writing tool", "free job application tools"
     ],
     'career-tips': [
       "resume writing advice", "resume format tips", "job interview preparation", 

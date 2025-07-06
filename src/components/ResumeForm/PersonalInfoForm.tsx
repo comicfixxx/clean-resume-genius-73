@@ -86,7 +86,7 @@ export const PersonalInfoForm = ({ isActive, onComplete, initialData = {} }: Per
     e.preventDefault();
     
     if (validateForm()) {
-      // Store user information for payment flow
+      // Store user information for easy access
       if (formData.email) localStorage.setItem('user_email', formData.email);
       if (formData.fullName) localStorage.setItem('user_name', formData.fullName);
       if (formData.phone) localStorage.setItem('user_phone', formData.phone);
