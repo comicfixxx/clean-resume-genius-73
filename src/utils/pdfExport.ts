@@ -76,7 +76,9 @@ export const exportToFormat = async (format: string = 'pdf') => {
   };
 
   try {
-    console.log(`Starting optimized resume export to ${format} format`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Starting optimized resume export to ${format} format`);
+    }
     
     // Use requestAnimationFrame for better timing with browser's render cycle
     await new Promise(resolve => requestAnimationFrame(() => {
@@ -132,7 +134,9 @@ export const exportToFormat = async (format: string = 'pdf') => {
       });
     }
     
-    console.log('Resume export completed successfully');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Resume export completed successfully');
+    }
     
     return true;
   } catch (error) {
@@ -164,7 +168,9 @@ export const fallbackExport = (format: string = 'pdf') => {
   const element = document.getElementById('resume-preview');
   
   if (!element) {
-    console.error('Resume preview element not found for fallback export');
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Resume preview element not found for fallback export');
+    }
     return;
   }
   

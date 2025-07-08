@@ -31,7 +31,9 @@ export const ShareSection = () => {
         });
       }
     } catch (error) {
-      console.error('Error sharing:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sharing:', error);
+      }
       toast({
         title: "Couldn't share",
         description: "Please try copying the link manually.",

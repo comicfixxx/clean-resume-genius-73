@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { setupLazyLoadImages, preloadCriticalResources } from '@/utils/performanceUtils';
 import { addPreconnectLinks, registerServiceWorker } from '@/utils/responsiveUtils';
 import PromoPopup from "@/components/PromoPopup";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy-loaded components for better initial load performance
 const Home = lazy(() => import("@/pages/Home"));
@@ -84,9 +85,12 @@ const App: React.FC = () => {
         setTimeout(() => {
           const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
           if (navigationTiming) {
-            console.log(`Time to first byte: ${navigationTiming.responseStart}ms`);
-            console.log(`DOM Content Loaded: ${navigationTiming.domContentLoadedEventEnd}ms`);
-            console.log(`Load event: ${navigationTiming.loadEventEnd}ms`);
+            // Performance metrics for monitoring (only in development)
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Time to first byte: ${navigationTiming.responseStart}ms`);
+              console.log(`DOM Content Loaded: ${navigationTiming.domContentLoadedEventEnd}ms`);
+              console.log(`Load event: ${navigationTiming.loadEventEnd}ms`);
+            }
           }
         }, 0);
       });
@@ -94,39 +98,41 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <div className="min-h-screen flex flex-col bg-background">
-            <Toaster />
-            <PromoPopup />
-            <Navbar />
-            <main 
-              id="main-content" 
-              className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
-            >
-              <Suspense fallback={<Loading />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/builder" element={<Index />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/ats-checker" element={<ATSChecker />} />
-                  <Route path="/interview-guide" element={<InterviewGuide />} />
-                  <Route path="/career-tips" element={<CareerTips />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/splash" element={<Splash />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="*" element={<Error />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <div className="min-h-screen flex flex-col bg-background">
+              <Toaster />
+              <PromoPopup />
+              <Navbar />
+              <main 
+                id="main-content" 
+                className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
+              >
+                <Suspense fallback={<Loading />}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/builder" element={<Index />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/ats-checker" element={<ATSChecker />} />
+                    <Route path="/interview-guide" element={<InterviewGuide />} />
+                    <Route path="/career-tips" element={<CareerTips />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/splash" element={<Splash />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="*" element={<Error />} />
+                  </Routes>
+                </Suspense>
+              </main>
+              <Footer />
+            </div>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 };
 

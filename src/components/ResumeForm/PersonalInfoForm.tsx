@@ -46,7 +46,9 @@ export const PersonalInfoForm = ({ isActive, onComplete, initialData = {} }: Per
         }));
       }
     } catch (error) {
-      console.error('Error loading saved personal info:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading saved personal info:', error);
+      }
     }
   }, []);
   

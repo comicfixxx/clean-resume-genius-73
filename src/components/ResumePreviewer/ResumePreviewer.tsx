@@ -157,8 +157,10 @@ export const ResumePreviewer = memo(({ data, isPaid = false }: ResumePreviewerPr
         description: `Your resume is downloading as ${getFormatLabel(selectedFormat)}!`,
         variant: "default"
       });
-    } catch (error) {
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
       console.error("Error during export:", error);
+    }
       toast({
         title: "Export Error",
         description: "There was an error downloading your resume. Please try again.",
