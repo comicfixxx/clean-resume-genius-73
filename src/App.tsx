@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { setupLazyLoadImages, preloadCriticalResources } from '@/utils/performanceUtils';
 import { addPreconnectLinks, registerServiceWorker } from '@/utils/responsiveUtils';
+import PromoPopup from "@/components/PromoPopup";
 
 // Lazy-loaded components for better initial load performance
 const Home = lazy(() => import("@/pages/Home"));
@@ -98,6 +99,7 @@ const App: React.FC = () => {
         <TooltipProvider>
           <div className="min-h-screen flex flex-col bg-background">
             <Toaster />
+            <PromoPopup />
             <Navbar />
             <main 
               id="main-content" 
