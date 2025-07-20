@@ -1,5 +1,5 @@
 
-import React, { useEffect, lazy, Suspense } from 'react';
+import * as React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,18 +13,18 @@ import PromoPopup from "@/components/PromoPopup";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy-loaded components for better initial load performance
-const Home = lazy(() => import("@/pages/Home"));
+const Home = React.lazy(() => import("@/pages/Home"));
 import Index from "@/pages/Index";  // Direct import to debug React issue
-const About = lazy(() => import("@/pages/About"));
-const ATSChecker = lazy(() => import("@/pages/ATSChecker"));
-const InterviewGuide = lazy(() => import("@/pages/InterviewGuide"));
-const Privacy = lazy(() => import("@/pages/Privacy"));
-const Terms = lazy(() => import("@/pages/Terms"));
-const Cookies = lazy(() => import("@/pages/Cookies"));
-const Error = lazy(() => import("@/pages/Error"));
-const Splash = lazy(() => import("@/pages/Splash"));
-const Pricing = lazy(() => import("@/pages/Pricing"));
-const CareerTips = lazy(() => import("@/pages/CareerTips"));
+const About = React.lazy(() => import("@/pages/About"));
+const ATSChecker = React.lazy(() => import("@/pages/ATSChecker"));
+const InterviewGuide = React.lazy(() => import("@/pages/InterviewGuide"));
+const Privacy = React.lazy(() => import("@/pages/Privacy"));
+const Terms = React.lazy(() => import("@/pages/Terms"));
+const Cookies = React.lazy(() => import("@/pages/Cookies"));
+const Error = React.lazy(() => import("@/pages/Error"));
+const Splash = React.lazy(() => import("@/pages/Splash"));
+const Pricing = React.lazy(() => import("@/pages/Pricing"));
+const CareerTips = React.lazy(() => import("@/pages/CareerTips"));
 
 // Loading component for Suspense
 const Loading = () => (
@@ -65,7 +65,7 @@ const App: React.FC = () => {
   const location = useLocation();
   
   // Set up performance optimizations when the app loads
-  useEffect(() => {
+  React.useEffect(() => {
     // Preload critical resources
     preloadCriticalResources(criticalResources);
     
@@ -110,7 +110,7 @@ const App: React.FC = () => {
                 id="main-content" 
                 className="flex-1 w-full max-w-full mx-auto px-2 xs:px-4 sm:px-6 lg:px-8 safe-bottom gpu-accelerated"
               >
-                <Suspense fallback={<Loading />}>
+                <React.Suspense fallback={<Loading />}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/builder" element={<Index />} />
@@ -125,7 +125,7 @@ const App: React.FC = () => {
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="*" element={<Error />} />
                   </Routes>
-                </Suspense>
+                </React.Suspense>
               </main>
               <Footer />
             </div>
