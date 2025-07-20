@@ -14,7 +14,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy-loaded components for better initial load performance
 const Home = lazy(() => import("@/pages/Home"));
-const Index = lazy(() => import("@/pages/Index"));
+import Index from "@/pages/Index";  // Direct import to debug React issue
 const About = lazy(() => import("@/pages/About"));
 const ATSChecker = lazy(() => import("@/pages/ATSChecker"));
 const InterviewGuide = lazy(() => import("@/pages/InterviewGuide"));
