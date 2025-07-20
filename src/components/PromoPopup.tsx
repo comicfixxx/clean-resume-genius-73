@@ -26,7 +26,7 @@ const PromoPopup = () => {
   }, [isVisible]);
 
   const handleWhatsAppClick = () => {
-    window.open("https://wa.me/916567785080", "_blank");
+    window.open("https://wa.me/919656778508", "_blank");
   };
 
   const handleProductHuntClick = () => {
@@ -62,7 +62,7 @@ const PromoPopup = () => {
 
           <div className="bg-muted/30 rounded-lg p-3 my-6">
             <p className="text-sm font-medium text-foreground">
-              Contact: <span className="font-mono">+91 65677 8508</span>
+              Contact: <span className="font-mono">+91 965677 8508</span>
             </p>
           </div>
 
