@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "@/components/ResumeForm/PersonalInfoForm";
 import { ExperienceForm } from "@/components/ResumeForm/ExperienceForm";
@@ -20,8 +20,8 @@ import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const { toast } = useToast();
   const { isMobile, isTablet } = useDeviceDetect();
-  const [activeSection, setActiveSection] = useState("personal");
-  const [resumeData, setResumeData] = useState({
+  const [activeSection, setActiveSection] = React.useState("personal");
+  const [resumeData, setResumeData] = React.useState({
     personal: {},
     experience: [],
     education: [],
